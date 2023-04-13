@@ -1,0 +1,21 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@nuxtjs/eslint-config-typescript": "12.0.0",
+    "@nuxtjs/tailwindcss": "^6.6.6",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nuxt": "^3.4.0"
+  },
+  "dependencies": {
+    "@material-tailwind/html": "^2.0.0"
+  }
+}
