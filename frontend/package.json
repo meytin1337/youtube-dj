@@ -16,6 +16,7 @@
     "nuxt": "^3.4.0"
   },
   "dependencies": {
-    "@material-tailwind/html": "^2.0.0"
+    "@material-tailwind/html": "^2.0.0",
+    "howler": "^2.2.3"
   }
 }

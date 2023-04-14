@@ -25,14 +25,30 @@
 </template>
 
 <script setup>
+import { Howl } from "howler";
 const url = ref("");
+
 const downloadVideo = async () => {
   const videoId = url.value.split("v=")[1];
   try {
-    const { data } = await useFetch("http://localhost:5000/download/" + videoId);
-    console.log(data);
-  } catch (err) {
-    console.log(err);
+    const { data, error } = await useFetch(
+      "http://localhost:5000/download/" + videoId
+    );
+
+    if (error.value) throw error.value;
+    const sound = new Howl({
+      src: [URL.createObjectURL(data.value)],
+      onloaderror() {
+        console.log("error loading");
+      },
+      onplayerror() {
+        console.log("error playing");
+      },
+      format: ["mp4"],
+    });
+    sound.play();
+  } catch (error) {
+    console.log(error);
   }
 };
 </script>

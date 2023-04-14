@@ -1,4 +1,18 @@
+<<<<<<< HEAD
 *.DS_Store
 backend/Pipfile.lock
 env
 __pychache__
+=======
+node_modules
+*.log*
+.nuxt
+.nitro
+.cache
+.output
+.env
+dist
+.DS_Store
+*.m4a
+.vscode/
+>>>>>>> 30d129d (Add howler js)
