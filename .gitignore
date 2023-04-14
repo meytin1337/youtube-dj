@@ -1,0 +1,4 @@
+*.DS_Store
+backend/Pipfile.lock
+env
+__pychache__
