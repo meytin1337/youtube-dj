@@ -1,4 +1,5 @@
-from flask import Flask, send_file
+from flask import Flask, send_file, after_this_request
+import os
 from io import BytesIO
 
 app = Flask(__name__)
@@ -55,5 +56,12 @@ ydl_opts = {
 @app.route("/download/<id>")
 def download_file(id):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download(["https://youtube.com/watch?v=" + id])
-        return send_file(m4a_path, mimetype="audio/mp4", as_attachment=True)
+        x = ydl.download(["https://youtube.com/watch?v=" + id])
+    @after_this_request
+    def remove_file(response):
+            try:
+                os.remove(m4a_path)
+            except Exception as error:
+                app.logger.error("Error removing or closing downloaded file handle", error)
+            return response
+    return send_file(m4a_path, mimetype="audio/mp4", as_attachment=True)
