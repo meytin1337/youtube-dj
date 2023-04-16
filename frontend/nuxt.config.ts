@@ -4,5 +4,10 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
+  runtimeConfig: {
+    public: {
+      api: "https://youtube-dj.ddns.net/",
+    },
+  },
   css: ["~/assets/css/main.css"],
 });

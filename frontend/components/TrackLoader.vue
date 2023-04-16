@@ -10,13 +10,13 @@ const youtubeLink = useState("youtubeLink", () => "");
 const tracks = useTracks();
 const isValid = computed(() => youtubeLink.value !== "");
 const isDownloading = ref(false);
+const runtimeConfig = useRuntimeConfig();
 
 const downloadVideo = async () => {
   const videoId = youtubeLink.value.split("v=")[1];
-  // TODO: add loading indicator
   isDownloading.value = true;
   const trackInfoResponse = await useFetch<TrackInfoResponse>(
-    "http://localhost:5000/download/" + videoId + "/trackinfo"
+    runtimeConfig.public.api + "download/" + videoId + "/trackinfo"
   );
   if (trackInfoResponse.error.value)
     throw createError({
@@ -34,7 +34,7 @@ const downloadVideo = async () => {
     });
   }
   const fileResponse = await useFetch<Blob>(
-    "http://localhost:5000/download/" + videoId + "/file"
+    runtimeConfig.public.api + "download/" + videoId + "/file"
   );
   if (fileResponse.error.value)
     throw createError({
