@@ -35,7 +35,6 @@ class MyLogger:
 # ℹ️ See "progress_hooks" in help(yt_dlp.YoutubeDL)
 def my_hook(d):
     if d["status"] == "finished":
-        print(d["total_bytes"])
         global m4a_path
         m4a_path = d["filename"]
 
@@ -56,7 +55,7 @@ ydl_opts = {
 }
 
 
-@app.route("/download/<id>")
+@app.route("/download/<id>/file")
 def download_file(id):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         x = ydl.download(["https://youtube.com/watch?v=" + id])
@@ -68,3 +67,9 @@ def download_file(id):
                 app.logger.error("Error removing or closing downloaded file handle", error)
             return response
     return send_file(m4a_path, mimetype="audio/mp4", as_attachment=True)
+
+@app.route("/download/<id>/trackinfo")
+def get_track_info(id):
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        track_info = ydl.extract_info("https://youtube.com/watch?v=" + id, download=False)
+    return track_info 
