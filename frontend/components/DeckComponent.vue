@@ -1,74 +1,64 @@
 <script lang="ts" setup>
+import { PlayCircleIcon, PauseCircleIcon } from "@heroicons/vue/24/solid";
 interface Props {
-  deck: number;
+  useDeck: Function;
 }
 const props = defineProps<Props>();
-const activeTrack = useActiveTracks()[props.deck - 1];
-const isPlaying = ref(false);
-const volume = ref("1");
-const rate = ref("1");
-activeTrack.sound?.value?.on("end", () => {
-  isPlaying.value = false;
-});
-const buttonText = computed(() => {
-  if (isPlaying.value) {
-    return "pause";
-  } else {
-    return "play";
-  }
-});
-const togglePlay = () => {
-  if (isPlaying.value) {
-    activeTrack.sound?.value?.pause();
-    isPlaying.value = false;
-  } else {
-    activeTrack?.sound?.value?.play();
-    isPlaying.value = true;
-  }
-};
+const deck = props.useDeck();
 const setVolume = (value: string) => {
-  volume.value = value;
-  activeTrack.sound?.value?.volume(Number(value));
+  deck.volume.value = Number(value);
+  deck.sound.value?.volume(deck.volume.value);
 };
 const setRate = (value: string) => {
-  rate.value = value;
-  activeTrack.sound?.value?.rate(Number(value));
+  deck.rate.value = Number(value);
+  deck.sound.value?.rate(deck.rate.value);
 };
 </script>
 
 <template>
   <div class="w-full flex flex-col justify-center align-middle m-5">
     <div
-      v-if="activeTrack.title.value"
+      v-if="deck.title.value"
       class="flex justify-center align-middle h-28 shadow w-full"
     >
       <p>
-        {{ activeTrack.title.value }}
+        {{ deck.title.value }}
       </p>
     </div>
 
     <div v-else class="flex justify-center align-middle h-28 shadow w-full">
-      Deck {{ deck }} - no track loaded
+      No track loaded
     </div>
-    <button
-      class="w-1/3 ml-auto mr-auto middle none center mt-5 rounded-lg bg-green-500 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-green-500/20 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-      @click="togglePlay"
-    >
-      {{ buttonText }}
-    </button>
+    <PauseCircleIcon
+      v-if="deck.title.value && deck.isPlaying.value"
+      class="text-blue-400 ml-auto mr-auto h-11 w-11 m-5 cursor-pointer"
+      @click="deck.sound.value?.pause()"
+    />
+    <PlayCircleIcon
+      v-else-if="deck.title.value && !deck.isPlaying.value"
+      class="text-blue-400 ml-auto mr-auto h-11 w-11 m-5 cursor-pointer"
+      @click="deck.sound.value?.play()"
+    />
+    <PlayCircleIcon
+      v-else
+      class="text-gray-400 ml-auto mr-auto h-11 w-11 m-5"
+    />
+
     <RangeSlider
       type="volume"
       :min="0"
       :max="1"
-      :input="setVolume"
-      :value="volume"
+      :value="String(deck.volume.value)"
+      emit="setVolume"
+      @set-volume="setVolume"
     />
     <RangeSlider
       type="rate"
       :min="0.5"
       :max="2"
-      :input="setRate"
-      :value="rate"
+      :value="String(deck.rate.value)"
+      emit="setRate"
+      @set-rate="setRate"
     />
   </div>
 </template>

@@ -4,4 +4,5 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
+  css: ["~/assets/css/main.css"],
 });

@@ -21,6 +21,7 @@
     "vue-tsc": "^1.2.0"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.0.17",
     "@material-tailwind/html": "^2.0.0",
     "@types/howler": "^2.2.7",
     "howler": "^2.2.3"

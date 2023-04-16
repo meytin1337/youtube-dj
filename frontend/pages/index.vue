@@ -2,8 +2,8 @@
   <div class="flex flex-col items-center justify-center">
     <h1 class="text-2xl m-10">Welcome to youtube-dj</h1>
     <div class="flex w-1/2 justify-center">
-      <DeckComponent :deck="1" />
-      <DeckComponent :deck="2" />
+      <DeckComponent :use-deck="useDeckOne" :deck="1" />
+      <DeckComponent :use-deck="useDeckTwo" :deck="2" />
     </div>
     <NuxtErrorBoundary>
       <TrackLoader />

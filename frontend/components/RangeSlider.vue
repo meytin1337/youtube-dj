@@ -4,7 +4,7 @@ interface Props {
   min: number;
   max: number;
   value: string;
-  input: Function;
+  emit: string;
 }
 const props = defineProps<Props>();
 const label = computed(() => {
@@ -32,8 +32,9 @@ const label = computed(() => {
       :max="max"
       :value="value"
       step="any"
+      autocomplete="off"
       class="transparent h-1.5 w-full cursor-pointer appearance-none rounded-lg border-transparent bg-neutral-200"
-      @input="input($event.target?.value)"
+      @input="$emit(props.emit, $event.target.value)"
     />
   </div>
 </template>

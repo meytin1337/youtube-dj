@@ -1,11 +1,19 @@
 <script lang="ts" setup>
 import { Howl } from "howler";
-import LoadTrackOnDeckButton from "./LoadTrackOnDeckButton.vue";
+import { CheckIcon, ArrowUpCircleIcon } from "@heroicons/vue/24/solid";
 
 const tracks = useTracks();
-const activeTracks = useActiveTracks();
-const loadTrackOnDeck = (deck: number, file: Blob, title: string) => {
-  activeTracks[deck - 1].sound.value = new Howl({
+const deckOne = useDeckOne();
+const deckTwo = useDeckTwo();
+const loadTrackOnDeck = (
+  deck: number,
+  file: Blob,
+  title: string,
+  id: string
+) => {
+  const activeDeck = deck === 1 ? deckOne : deckTwo;
+  if (activeDeck.sound.value) activeDeck.sound.value.unload();
+  activeDeck.sound.value = new Howl({
     src: [URL.createObjectURL(file)],
     onloaderror() {
       throw createError("error loading");
@@ -13,9 +21,25 @@ const loadTrackOnDeck = (deck: number, file: Blob, title: string) => {
     onplayerror() {
       throw createError("error playing");
     },
+    onend() {
+      activeDeck.isPlaying.value = false;
+    },
+    onplay() {
+      activeDeck.isPlaying.value = true;
+    },
+    onpause() {
+      activeDeck.isPlaying.value = false;
+    },
+    onstop() {
+      activeDeck.isPlaying.value = false;
+    },
+    onload() {
+      activeDeck.sound?.value?.rate(activeDeck.rate.value);
+    },
     format: ["mp4"],
   });
-  activeTracks[deck - 1].title.value = title;
+  activeDeck.title.value = title;
+  activeDeck.id.value = id;
 };
 </script>
 
@@ -31,40 +55,50 @@ const loadTrackOnDeck = (deck: number, file: Blob, title: string) => {
               <tr>
                 <th scope="col" class="px-6 py-4">#</th>
                 <th scope="col" class="px-6 py-4">Title</th>
-                <th scope="col" class="px-6 py-4">Deck 1</th>
-                <th scope="col" class="px-6 py-4">Deck 2</th>
+                <th scope="col" class="px-6 py-4">Load Track on Deck 1</th>
+                <th scope="col" class="px-6 py-4">Load Track on Deck 2</th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="(track, index) in tracks"
                 :key="track.id"
-                class="border-b bg-neutral-100 dark:border-neutral-500 dark:bg-neutral-700"
+                class="border-b bg-neutral-100 dark:border-neutral-500 dark:bg-neutral-400"
               >
                 <td class="whitespace-nowrap px-6 py-4 font-medium">
-                  {{ index }}
+                  {{ index + 1 }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4">{{ track.title }}</td>
-                <td class="whitespace-nowrap px-6 py-4">
-                  <LoadTrackOnDeckButton
-                    class="m-1"
-                    :file="track.file"
-                    button-text="load to first deck"
-                    :disabled="false"
-                    :title="track.title"
-                    :click="loadTrackOnDeck"
-                    :deck="1"
+                <td
+                  v-if="deckOne.id.value === track.id"
+                  class="whitespace-nowrap px-6 py-4"
+                >
+                  <CheckIcon
+                    class="h-7 w-7 text-green-500 cursor-pointer ml-auto mr-auto"
                   />
                 </td>
-                <td class="whitespace-nowrap px-6 py-4">
-                  <LoadTrackOnDeckButton
-                    class="m-1"
-                    :file="track.file"
-                    button-text="load to second deck"
-                    :disabled="false"
-                    :click="loadTrackOnDeck"
-                    :title="track.title"
-                    :deck="2"
+                <td v-else class="whitespace-nowrap px-6 py-4">
+                  <ArrowUpCircleIcon
+                    class="h-7 w-7 text-blue-400 cursor-pointer ml-auto mr-auto"
+                    @click="
+                      loadTrackOnDeck(1, track.file, track.title, track.id)
+                    "
+                  />
+                </td>
+                <td
+                  v-if="deckTwo.id.value === track.id"
+                  class="whitespace-nowrap px-6 py-4"
+                >
+                  <CheckIcon
+                    class="h-7 w-7 text-green-500 cursor-pointer ml-auto mr-auto"
+                  />
+                </td>
+                <td v-else class="whitespace-nowrap px-6 py-4">
+                  <ArrowUpCircleIcon
+                    class="h-7 w-7 text-blue-400 cursor-pointer ml-auto mr-auto"
+                    @click="
+                      loadTrackOnDeck(2, track.file, track.title, track.id)
+                    "
                   />
                 </td>
               </tr>

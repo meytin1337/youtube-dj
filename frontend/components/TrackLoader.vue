@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Howl } from "howler";
+import { ArrowDownTrayIcon } from "@heroicons/vue/24/solid";
 
 interface TrackInfoResponse {
   title: string;
@@ -8,7 +8,7 @@ interface TrackInfoResponse {
 
 const youtubeLink = useState("youtubeLink", () => "");
 const tracks = useTracks();
-const isButtonDisabled = computed(() => youtubeLink.value === "");
+const isValid = computed(() => youtubeLink.value !== "");
 const isDownloading = ref(false);
 
 const downloadVideo = async () => {
@@ -58,7 +58,7 @@ const downloadVideo = async () => {
   <div
     class="m-10 relative h-11 w-1/3 min-w-[200px] flex flex-col justify-center"
   >
-    <div class="mb-10 relative h-full w-full">
+    <div class="flex mb-10 relative h-full w-full">
       <input
         v-model="youtubeLink"
         class="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-pink-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
@@ -69,14 +69,18 @@ const downloadVideo = async () => {
       >
         Youtube link
       </label>
+      <div v-if="isDownloading">Downloading</div>
+      <ArrowDownTrayIcon
+        v-else-if="isValid"
+        class="w-9 h-9 text-blue-500 cursor-pointer"
+        disabled="isButtonDisabled"
+        @click="downloadVideo"
+      />
+      <ArrowDownTrayIcon
+        v-else
+        class="w-9 h-9 text-gray-400"
+        disabled="isButtonDisabled"
+      />
     </div>
-    <div v-if="isDownloading">Downloading</div>
-    <ConfirmButton
-      class="w-1/2 mr-auto ml-auto"
-      v-else
-      :click="downloadVideo"
-      :disabled="isButtonDisabled"
-      button-text="Download"
-    />
   </div>
 </template>
