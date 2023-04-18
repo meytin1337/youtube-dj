@@ -3,6 +3,7 @@ import { PlayCircleIcon, PauseCircleIcon } from "@heroicons/vue/24/solid";
 interface Props {
   useDeck: Function;
 }
+const canvas = useCanvas();
 const props = defineProps<Props>();
 const deck = props.useDeck();
 const setVolume = (value: string) => {
@@ -13,22 +14,14 @@ const setRate = (value: string) => {
   deck.rate.value = Number(value);
   deck.sound.value?.rate(deck.rate.value);
 };
+deck.sound.value?.on("load", () => {
+  console.log('load');
+});
 </script>
 
 <template>
   <div class="w-full flex flex-col justify-center align-middle m-5">
-    <div
-      v-if="deck.title.value"
-      class="flex justify-center align-middle h-28 shadow w-full"
-    >
-      <p>
-        {{ deck.title.value }}
-      </p>
-    </div>
-
-    <div v-else class="flex justify-center align-middle h-28 shadow w-full">
-      No track loaded
-    </div>
+    <slot></slot>
     <PauseCircleIcon
       v-if="deck.title.value && deck.isPlaying.value"
       class="text-blue-400 ml-auto mr-auto h-11 w-11 m-5 cursor-pointer"
