@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 import { CheckIcon, ArrowUpCircleIcon } from "@heroicons/vue/24/solid";
-import { Track, Deck } from "../composables/states";
+import { Track } from "../composables/states";
 interface Props {
   tracks: Track[];
-  deckOne: Deck;
-  deckTwo: Deck;
 }
+const deckOne = useDeckOne();
+const deckTwo = useDeckTwo();
 const props = defineProps<Props>();
 </script>
 
 <template>
-  <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+  <div class="overflow-x-auto mr-auto ml-auto w-1/2">
     <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
       <div class="overflow-hidden">
         <table class="min-w-full text-left text-sm font-light">
@@ -35,35 +35,27 @@ const props = defineProps<Props>();
               </td>
               <td class="whitespace-nowrap px-6 py-4">{{ track.title }}</td>
               <td
-                v-if="props.deckOne.id.value === track.id"
+                v-if="deckOne.trackId.value === track.id"
                 class="whitespace-nowrap px-6 py-4"
               >
-                <CheckIcon
-                  class="h-7 w-7 text-green-500 cursor-pointer ml-auto mr-auto"
-                />
+                <CheckIcon class="ml-10 -8 w-8 text-green-500 cursor-pointer" />
               </td>
               <td v-else class="whitespace-nowrap px-6 py-4">
                 <ArrowUpCircleIcon
-                  class="h-7 w-7 text-blue-400 cursor-pointer ml-auto mr-auto"
-                  @click="
-                    $emit('loadTrack', 1, track.file, track.title, track.id)
-                  "
+                  class="ml-10 -8 w-8 text-blue-400 cursor-pointer"
+                  @click="$emit('loadTrack', 1, track.file, track.id)"
                 />
               </td>
               <td
-                v-if="props.deckTwo.id.value === track.id"
+                v-if="deckTwo.trackId.value === track.id"
                 class="whitespace-nowrap px-6 py-4"
               >
-                <CheckIcon
-                  class="h-7 w-7 text-green-500 cursor-pointer ml-auto mr-auto"
-                />
+                <CheckIcon class="ml-10 -8 w-8 text-green-500 cursor-pointer" />
               </td>
               <td v-else class="whitespace-nowrap px-6 py-4">
                 <ArrowUpCircleIcon
-                  class="h-7 w-7 text-blue-400 cursor-pointer ml-auto mr-auto"
-                  @click="
-                    $emit('loadTrack', 2, track.file, track.title, track.id)
-                  "
+                  class="ml-10 kh-8 w-8 text-blue-400 cursor-pointer"
+                  @click="$emit('loadTrack', 2, track.file, track.id)"
                 />
               </td>
             </tr>

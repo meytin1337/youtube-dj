@@ -1,36 +1,38 @@
 <script lang="ts" setup>
 import { PlayCircleIcon, PauseCircleIcon } from "@heroicons/vue/24/solid";
 interface Props {
-  useDeck: Function;
+  deck: number;
 }
-const canvas = useCanvas();
 const props = defineProps<Props>();
-const deck = props.useDeck();
+const deck = props.deck === 1 ? useDeckOne() : useDeckTwo();
 const setVolume = (value: string) => {
   deck.volume.value = Number(value);
-  deck.sound.value?.volume(deck.volume.value);
+  deck.wavesurfer.value?.setVolume(value);
 };
 const setRate = (value: string) => {
   deck.rate.value = Number(value);
-  deck.sound.value?.rate(deck.rate.value);
+  deck.wavesurfer.value?.setPlaybackRate(value);
 };
-deck.sound.value?.on("load", () => {
-  console.log('load');
-});
+const pause = () => {
+  deck.wavesurfer.value?.pause();
+};
+const play = () => {
+  deck.wavesurfer.value?.play();
+};
 </script>
 
 <template>
   <div class="w-full flex flex-col justify-center align-middle m-5">
     <slot></slot>
     <PauseCircleIcon
-      v-if="deck.title.value && deck.isPlaying.value"
+      v-if="deck.isWaveformReady.value && deck.isPlaying.value"
       class="text-blue-400 ml-auto mr-auto h-11 w-11 m-5 cursor-pointer"
-      @click="deck.sound.value?.pause()"
+      @click="pause()"
     />
     <PlayCircleIcon
-      v-else-if="deck.title.value && !deck.isPlaying.value"
+      v-else-if="deck.isWaveformReady.value && !deck.isPlaying.value"
       class="text-blue-400 ml-auto mr-auto h-11 w-11 m-5 cursor-pointer"
-      @click="deck.sound.value?.play()"
+      @click="play"
     />
     <PlayCircleIcon
       v-else
@@ -42,6 +44,7 @@ deck.sound.value?.on("load", () => {
       :min="0"
       :max="1"
       :value="String(deck.volume.value)"
+      :disabled="!deck.trackId.value"
       emit="setVolume"
       @set-volume="setVolume"
     />
@@ -50,6 +53,7 @@ deck.sound.value?.on("load", () => {
       :min="0.5"
       :max="2"
       :value="String(deck.rate.value)"
+      :disabled="!deck.trackId.value"
       emit="setRate"
       @set-rate="setRate"
     />

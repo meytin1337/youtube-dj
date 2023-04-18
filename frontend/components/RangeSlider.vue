@@ -4,6 +4,7 @@ interface Props {
   min: number;
   max: number;
   value: string;
+  disabled: boolean;
   emit: string;
 }
 const props = defineProps<Props>();
@@ -31,6 +32,7 @@ const label = computed(() => {
       :min="min"
       :max="max"
       :value="value"
+      :disabled="disabled"
       step="any"
       autocomplete="off"
       class="transparent h-1.5 w-full cursor-pointer appearance-none rounded-lg border-transparent bg-neutral-200"
