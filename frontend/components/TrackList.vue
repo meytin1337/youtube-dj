@@ -43,7 +43,9 @@ const props = defineProps<Props>();
               <td v-else class="whitespace-nowrap px-6 py-4">
                 <ArrowUpCircleIcon
                   class="ml-10 -8 w-8 text-blue-400 cursor-pointer"
-                  @click="$emit('loadTrack', 1, track.file, track.id)"
+                  @click="
+                    $emit('loadTrack', 1, track.file, track.id, track.title)
+                  "
                 />
               </td>
               <td
@@ -55,7 +57,9 @@ const props = defineProps<Props>();
               <td v-else class="whitespace-nowrap px-6 py-4">
                 <ArrowUpCircleIcon
                   class="ml-10 kh-8 w-8 text-blue-400 cursor-pointer"
-                  @click="$emit('loadTrack', 2, track.file, track.id)"
+                  @click="
+                    $emit('loadTrack', 2, track.file, track.id, track.title)
+                  "
                 />
               </td>
             </tr>

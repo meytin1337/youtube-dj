@@ -8,15 +8,6 @@ interface Props {
   emit: string;
 }
 const props = defineProps<Props>();
-const label = computed(() => {
-  if (props.type === "volume") {
-    return `${Math.round(Number(props.value) * 100)}% Volume`;
-  } else if (props.type === "rate") {
-    return `${Math.round(Number(props.value) * 100) / 100}x Speed`;
-  } else {
-    return `${Math.round(Number(props.value) * 100) / 100}`;
-  }
-});
 </script>
 
 <template>
@@ -24,8 +15,8 @@ const label = computed(() => {
     <label
       :for="type"
       class="w-full mb-2 inline-block text-neutral-700 dark:text-neutral-200"
-      >{{ label }}</label
-    >
+      ><slot></slot
+    ></label>
     <input
       :id="type"
       type="range"

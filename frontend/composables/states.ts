@@ -1,3 +1,5 @@
+import WaveSurfer from "wavesurfer.js";
+
 export interface Track {
   id: string;
   title: string;
@@ -6,12 +8,15 @@ export interface Track {
 
 export interface Deck {
   id: Ref<Number>;
-  wavesurfer: Ref<any>;
+  wavesurfer: Ref<WaveSurfer | undefined>;
   trackId: Ref<string | undefined>;
   rate: Ref<number>;
   volume: Ref<number>;
   isWaveformReady: Ref<boolean>;
   isPlaying: Ref<boolean>;
+  title: Ref<string | undefined>;
+  bpm: Ref<number>;
+  lowFilter: Ref<number>;
 }
 
 export const useTracks = () => {
@@ -21,12 +26,15 @@ export const useTracks = () => {
 export const useDeckOne = (): Deck => {
   return {
     id: useState<number>("deckOneId", () => 1),
-    wavesurfer: useState<any>("deckOneSound", () => undefined),
+    wavesurfer: useState<undefined>("deckOneSound", () => undefined),
     trackId: useState<string | undefined>("deckOneTrackId", () => undefined),
     rate: useState<number>("deckOneRate", () => 1),
     volume: useState<number>("deckOneVolume", () => 1),
     isWaveformReady: useState<boolean>("deckOneWaveformReady", () => false),
     isPlaying: useState<boolean>("deckOneIsPlaying", () => false),
+    bpm: useState<number>("deckOneBpm", () => 0),
+    title: useState<string | undefined>("deckOneTrackTitle", () => undefined),
+    lowFilter: useState<number>("deckOneLowFilter", () => 0),
   };
 };
 
@@ -39,5 +47,8 @@ export const useDeckTwo = (): Deck => {
     volume: useState<number>("deckTwoVolume", () => 1),
     isWaveformReady: useState<boolean>("deckTwoWaveformReady", () => false),
     isPlaying: useState<boolean>("deckTwoIsPlaying", () => false),
+    bpm: useState<number>("deckTwoBpm", () => 0),
+    title: useState<string | undefined>("deckTwoTrackTitle", () => undefined),
+    lowFilter: useState<number>("deckTwoLowFilter", () => 0),
   };
 };

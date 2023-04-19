@@ -11,6 +11,7 @@
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "12.0.0",
     "@nuxtjs/tailwindcss": "^6.6.6",
+    "@types/wavesurfer.js": "^6.0.5",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "eslint": "^8.38.0",
@@ -23,6 +24,7 @@
   "dependencies": {
     "@heroicons/vue": "^2.0.17",
     "@material-tailwind/html": "^2.0.0",
-    "wavesurfer.js": "7.0.0-alpha.32"
+    "wavesurfer.js": "^6.6.3",
+    "web-audio-beat-detector": "^8.1.44"
   }
 }

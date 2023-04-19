@@ -1,17 +1,24 @@
 <script lang="ts" setup>
 import { NuxtError } from "#app";
+
 const youtubeLink = useState("youtubeLink", () => "");
 
 const tracks = useTracks();
 const waveFormContainerDeckOne = ref<HTMLDivElement | null>(null);
 const waveFormContainerDeckTwo = ref<HTMLDivElement | null>(null);
-const loadTrack = (deck: number, file: Blob, trackId: string) => {
+const loadTrack = (
+  deck: number,
+  file: Blob,
+  trackId: string,
+  title: string
+) => {
   const activeDeck = deck === 1 ? useDeckOne() : useDeckTwo();
   const activeWaveFormContainer =
     deck === 1
       ? waveFormContainerDeckOne.value
       : waveFormContainerDeckTwo.value;
-  useLoadTrackOnDeck(activeDeck, file, trackId, activeWaveFormContainer);
+  if (!activeWaveFormContainer) throw createError("No Waveform Container");
+  useLoadTrackOnDeck(activeDeck, file, trackId, activeWaveFormContainer, title);
 };
 const resetError = (error: NuxtError) => {
   youtubeLink.value = "";
