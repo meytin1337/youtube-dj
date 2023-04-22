@@ -17,6 +17,8 @@ export interface Deck {
   title: Ref<string | undefined>;
   bpm: Ref<number>;
   lowFilter: Ref<number>;
+  highFilter: Ref<number>;
+  midFilter: Ref<number>;
 }
 
 export const useTracks = () => {
@@ -35,6 +37,8 @@ export const useDeckOne = (): Deck => {
     bpm: useState<number>("deckOneBpm", () => 0),
     title: useState<string | undefined>("deckOneTrackTitle", () => undefined),
     lowFilter: useState<number>("deckOneLowFilter", () => 0),
+    highFilter: useState<number>("deckOneHighFilter", () => 0),
+    midFilter: useState<number>("deckOneMidFilter", () => 0),
   };
 };
 
@@ -50,5 +54,7 @@ export const useDeckTwo = (): Deck => {
     bpm: useState<number>("deckTwoBpm", () => 0),
     title: useState<string | undefined>("deckTwoTrackTitle", () => undefined),
     lowFilter: useState<number>("deckTwoLowFilter", () => 0),
+    highFilter: useState<number>("deckTwoHighFilter", () => 0),
+    midFilter: useState<number>("deckTwoMidFilter", () => 0),
   };
 };

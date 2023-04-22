@@ -30,25 +30,42 @@ const applyLowFilter = (value: string) => {
   filter.gain.value = Number(value);
   deck.lowFilter.value = Number(value);
 };
+const applyHighFilter = (value: string) => {
+  const filter = deck.wavesurfer.value
+    ?.getFilters()
+    ?.find((filter) => filter.type === "highshelf");
+  if (!filter?.gain) return;
+  filter.gain.value = Number(value);
+  deck.highFilter.value = Number(value);
+  deck.wavesurfer.value?.zoom(value);
+};
+const applyMidFilter = (value: string) => {
+  const filter = deck.wavesurfer.value
+    ?.getFilters()
+    ?.find((filter) => filter.type === "peaking");
+  if (!filter?.gain) return;
+  filter.gain.value = Number(value);
+  deck.midFilter.value = Number(value);
+};
 </script>
 
 <template>
-  <div class="w-full flex flex-col justify-center items-center m-5">
+  <div class="w-full flex flex-col justify-center items-center m-2">
     {{ deck.trackId.value ? deck.title.value : "No Track Loaded" }}
     <slot></slot>
-    <div class="m-5 flex flex-col items-center justify-center">
+    <div class="mt-4 flex flex-col items-center justify-center">
       <p class="font-bold">BPM: {{ liveBpm }}</p>
       <PauseCircleIcon
         v-if="deck.isWaveformReady.value && deck.isPlaying.value"
-        class="text-blue-400 h-11 w-11 m-5 cursor-pointer"
+        class="text-blue-400 h-11 w-11 m-2 cursor-pointer"
         @click="pause()"
       />
       <PlayCircleIcon
         v-else-if="deck.isWaveformReady.value && !deck.isPlaying.value"
-        class="text-blue-400 h-11 w-11 m-5 cursor-pointer"
+        class="text-blue-400 h-11 w-11 m-2 cursor-pointer"
         @click="play"
       />
-      <PlayCircleIcon v-else class="text-gray-400 h-11 w-11 m-5" />
+      <PlayCircleIcon v-else class="text-gray-400 h-11 w-11 m-2" />
     </div>
 
     <RangeSlider
@@ -79,11 +96,35 @@ const applyLowFilter = (value: string) => {
       :min="-40"
       :max="40"
       :value="String(deck.lowFilter.value)"
-      :disabled="!deck.trackId.value"
+      :disabled="!deck.isWaveformReady.value"
       emit="applyLowFilter"
       @apply-low-filter="applyLowFilter"
       >Low Filter:
       {{ Math.round(100 * deck.lowFilter.value) / 100 }}dB</RangeSlider
+    >
+    <RangeSlider
+      type="midFilter"
+      class="w-5/6"
+      :min="-40"
+      :max="40"
+      :value="String(deck.midFilter.value)"
+      :disabled="!deck.isWaveformReady.value"
+      emit="applyMidFilter"
+      @apply-mid-filter="applyMidFilter"
+      >Mid Filter:
+      {{ Math.round(100 * deck.midFilter.value) / 100 }}dB</RangeSlider
+    >
+    <RangeSlider
+      type="highFilter"
+      class="w-5/6"
+      :min="-40"
+      :max="40"
+      :value="String(deck.highFilter.value)"
+      :disabled="!deck.isWaveformReady.value"
+      emit="applyHighFilter"
+      @apply-high-filter="applyHighFilter"
+      >High Filter:
+      {{ Math.round(100 * deck.highFilter.value) / 100 }}dB</RangeSlider
     >
   </div>
 </template>

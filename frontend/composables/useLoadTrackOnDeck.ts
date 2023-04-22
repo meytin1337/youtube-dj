@@ -1,7 +1,11 @@
 import { analyze } from "web-audio-beat-detector";
-import { ArrowLongDownIcon } from "@heroicons/vue/24/solid";
 import { Deck } from "./states";
 
+const options = {
+  waveColor: "blue",
+  progressColor: "darkblue",
+  cursorColor: "navy",
+};
 export async function useLoadTrackOnDeck(
   deck: Deck,
   file: Blob,
@@ -12,10 +16,8 @@ export async function useLoadTrackOnDeck(
   const WaveSurfer = (await import("wavesurfer.js")).default;
   const fileUrl = URL.createObjectURL(file);
   const wavesurfer = WaveSurfer.create({
+    ...options,
     container,
-    waveColor: "violet",
-    progressColor: "purple",
-    cursorColor: "navy",
   });
   deck.wavesurfer.value?.destroy();
   deck.trackId.value = trackId;
@@ -42,13 +44,33 @@ export async function useLoadTrackOnDeck(
   });
   const ctx = wavesurfer.backend.ac;
   const lowFilter = ctx.createBiquadFilter();
-  wavesurfer.backend.setFilter(applyLowFilter(lowFilter, deck.lowFilter.value));
+  const highFilter = ctx.createBiquadFilter();
+  const midFilter = ctx.createBiquadFilter();
+  wavesurfer.backend.setFilter(
+    applyLowFilter(lowFilter, deck.lowFilter.value),
+    applyHighFilter(highFilter, deck.highFilter.value),
+    applyMidFilter(midFilter, deck.midFilter.value)
+  );
   deck.wavesurfer.value = wavesurfer;
 }
 
 const applyLowFilter = (filter: BiquadFilterNode, value: number) => {
   filter.type = "lowshelf";
   filter.frequency.value = 500;
+  filter.gain.value = value;
+  return filter;
+};
+
+const applyHighFilter = (filter: BiquadFilterNode, value: number) => {
+  filter.type = "highshelf";
+  filter.frequency.value = 1500;
+  filter.gain.value = value;
+  return filter;
+};
+
+const applyMidFilter = (filter: BiquadFilterNode, value: number) => {
+  filter.type = "peaking";
+  filter.frequency.value = 1000;
   filter.gain.value = value;
   return filter;
 };
