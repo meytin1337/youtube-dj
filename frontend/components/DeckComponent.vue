@@ -4,6 +4,8 @@ import {
   PauseCircleIcon,
   ForwardIcon,
   BackwardIcon,
+  MagnifyingGlassPlusIcon,
+  MagnifyingGlassMinusIcon 
 } from "@heroicons/vue/24/solid";
 interface Props {
   deck: number;
@@ -51,6 +53,10 @@ const applyMidFilter = (value: string) => {
   filter.gain.value = Number(value);
   deck.midFilter.value = Number(value);
 };
+const zoom = (value: string) => {
+  deck.zoom.value = deck.zoom.value + Number(value);
+  deck.wavesurfer.value?.zoom(deck.zoom.value);
+};
 </script>
 
 <template>
@@ -59,6 +65,12 @@ const applyMidFilter = (value: string) => {
     <slot></slot>
     <div class="mt-4 flex flex-col items-center justify-center">
       <div class="mt-4 flex flex-row items-center justify-center">
+        <MagnifyingGlassMinusIcon
+          v-if="deck.isWaveformReady.value"
+          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          @click="zoom('-1')"
+        />
+        <MagnifyingGlassMinusIcon v-else class="text-gray-400 h-11 w-11 m-2" />
         <BackwardIcon
           v-if="deck.isWaveformReady.value"
           class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
@@ -82,6 +94,12 @@ const applyMidFilter = (value: string) => {
           @click="deck.wavesurfer.value?.skip(0.5)"
         />
         <ForwardIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+        <MagnifyingGlassPlusIcon
+          v-if="deck.isWaveformReady.value"
+          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          @click="zoom('1')"
+        />
+        <MagnifyingGlassPlusIcon v-else class="text-gray-400 h-11 w-11 m-2" />
       </div>
       <p class="font-bold">BPM: {{ liveBpm }}</p>
     </div>
@@ -91,6 +109,7 @@ const applyMidFilter = (value: string) => {
       type="volume"
       :min="0"
       :max="1"
+      :step="'any'"
       :value="String(deck.volume.value)"
       :disabled="!deck.trackId.value"
       emit="setVolume"
@@ -102,6 +121,7 @@ const applyMidFilter = (value: string) => {
       class="w-5/6"
       :min="0.5"
       :max="2"
+      :step="'any'"
       :value="String(deck.rate.value)"
       :disabled="!deck.trackId.value"
       emit="setRate"
@@ -113,6 +133,7 @@ const applyMidFilter = (value: string) => {
       class="w-5/6"
       :min="-40"
       :max="40"
+      :step="'any'"
       :value="String(deck.lowFilter.value)"
       :disabled="!deck.isWaveformReady.value"
       emit="applyLowFilter"
@@ -125,6 +146,7 @@ const applyMidFilter = (value: string) => {
       class="w-5/6"
       :min="-40"
       :max="40"
+      :step="'any'"
       :value="String(deck.midFilter.value)"
       :disabled="!deck.isWaveformReady.value"
       emit="applyMidFilter"
@@ -137,6 +159,7 @@ const applyMidFilter = (value: string) => {
       class="w-5/6"
       :min="-40"
       :max="40"
+      :step="'any'"
       :value="String(deck.highFilter.value)"
       :disabled="!deck.isWaveformReady.value"
       emit="applyHighFilter"

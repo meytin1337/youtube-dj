@@ -19,6 +19,7 @@ export interface Deck {
   lowFilter: Ref<number>;
   highFilter: Ref<number>;
   midFilter: Ref<number>;
+  zoom: Ref<number>;
 }
 
 export const useTracks = () => {
@@ -39,6 +40,7 @@ export const useDeckOne = (): Deck => {
     lowFilter: useState<number>("deckOneLowFilter", () => 0),
     highFilter: useState<number>("deckOneHighFilter", () => 0),
     midFilter: useState<number>("deckOneMidFilter", () => 0),
+    zoom: useState<number>("deckOneZoom", () => 100),
   };
 };
 
@@ -56,5 +58,6 @@ export const useDeckTwo = (): Deck => {
     lowFilter: useState<number>("deckTwoLowFilter", () => 0),
     highFilter: useState<number>("deckTwoHighFilter", () => 0),
     midFilter: useState<number>("deckTwoMidFilter", () => 0),
+    zoom: useState<number>("deckTwoZoom", () => 100),
   };
 };

@@ -6,6 +6,7 @@ const options = {
   progressColor: "darkblue",
   cursorColor: "navy",
   hideScrollbar: true,
+  minPxPerSec: 50,
 };
 export async function useLoadTrackOnDeck(
   deck: Deck,
@@ -26,6 +27,7 @@ export async function useLoadTrackOnDeck(
   wavesurfer.load(fileUrl);
   wavesurfer.setVolume(deck.volume.value);
   wavesurfer.setPlaybackRate(deck.rate.value);
+  wavesurfer.zoom(deck.zoom.value);
   wavesurfer.on("ready", async () => {
     deck.isWaveformReady.value = true;
     deck.bpm.value = await analyze(wavesurfer.backend?.buffer);

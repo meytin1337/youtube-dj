@@ -5,6 +5,7 @@ interface Props {
   max: number;
   value: string;
   disabled: boolean;
+  step: number | "any";
   emit: string;
 }
 const props = defineProps<Props>();
@@ -39,7 +40,7 @@ const props = defineProps<Props>();
       :min="min"
       :max="max"
       :value="value"
-      step="any"
+      :step="step"
       autocomplete="off"
       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
       @input="$emit(props.emit, $event.target.value)"
