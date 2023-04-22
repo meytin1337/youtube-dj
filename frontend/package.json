@@ -14,16 +14,20 @@
     "@types/wavesurfer.js": "^6.0.5",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
+    "autoprefixer": "^10.4.14",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "nuxt": "^3.4.1",
+    "postcss": "^8.4.23",
+    "tailwindcss": "^3.3.1",
     "typescript": "^5.0.4",
     "vue-tsc": "^1.2.0"
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.17",
     "@material-tailwind/html": "^2.0.0",
+    "flowbite": "^1.6.5",
     "wavesurfer.js": "^6.6.3",
     "web-audio-beat-detector": "^8.1.44"
   }

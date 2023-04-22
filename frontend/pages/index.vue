@@ -28,7 +28,17 @@ const resetError = (error: NuxtError) => {
 
 <template>
   <div class="flex flex-col items-center justify-center">
-    <h1 class="text-2xl m-10">Welcome to youtube-dj</h1>
+    <h1
+      class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white"
+    >
+      Welcome to the future of DJing
+    </h1>
+    <p
+      class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400"
+    >
+      To get started, paste a youtube link into the input below and click the
+      Download button.
+    </p>
     <NuxtErrorBoundary>
       <TrackLoader />
       <template #error="{ error }">
@@ -36,7 +46,7 @@ const resetError = (error: NuxtError) => {
         <button @click="resetError(error)">Try Again</button>
       </template>
     </NuxtErrorBoundary>
-    <div class="flex flex-col w-full m-10">
+    <div class="flex flex-col w-full">
       <div class="flex justify-center">
         <DeckComponent :deck="1">
           <div ref="waveFormContainerDeckOne" class="h-28 shadow w-full"></div>

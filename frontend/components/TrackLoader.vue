@@ -58,7 +58,7 @@ const downloadVideo = async () => {
   <div
     class="m-5 relative h-11 w-1/3 min-w-[200px] flex flex-col justify-center"
   >
-    <div class="flex mb-10 relative h-full w-full">
+    <div class="flex relative h-full w-full">
       <input
         v-model="youtubeLink"
         class="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-pink-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"

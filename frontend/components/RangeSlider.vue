@@ -11,10 +11,26 @@ const props = defineProps<Props>();
 </script>
 
 <template>
-  <div>
+  <div v-if="disabled">
+    <label
+      for="disabled-range"
+      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      ><slot></slot
+    ></label>
+    <input
+      id="disabled-range"
+      type="range"
+      :min="min"
+      :max="max"
+      :value="value"
+      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+      disabled
+    />
+  </div>
+  <div v-else>
     <label
       :for="type"
-      class="w-full mb-2 inline-block text-neutral-700 dark:text-neutral-200"
+      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
       ><slot></slot
     ></label>
     <input
@@ -23,10 +39,9 @@ const props = defineProps<Props>();
       :min="min"
       :max="max"
       :value="value"
-      :disabled="disabled"
       step="any"
       autocomplete="off"
-      class="transparent h-1.5 w-full cursor-pointer appearance-none rounded-lg border-transparent bg-neutral-200"
+      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
       @input="$emit(props.emit, $event.target.value)"
     />
   </div>
