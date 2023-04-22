@@ -2,9 +2,10 @@ import { analyze } from "web-audio-beat-detector";
 import { Deck } from "./states";
 
 const options = {
-  waveColor: "blue",
+  waveColor: "lightblue",
   progressColor: "darkblue",
   cursorColor: "navy",
+  hideScrollbar: true,
 };
 export async function useLoadTrackOnDeck(
   deck: Deck,

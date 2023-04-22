@@ -1,5 +1,10 @@
 <script lang="ts" setup>
-import { PlayCircleIcon, PauseCircleIcon } from "@heroicons/vue/24/solid";
+import {
+  PlayCircleIcon,
+  PauseCircleIcon,
+  ForwardIcon,
+  BackwardIcon,
+} from "@heroicons/vue/24/solid";
 interface Props {
   deck: number;
 }
@@ -37,7 +42,6 @@ const applyHighFilter = (value: string) => {
   if (!filter?.gain) return;
   filter.gain.value = Number(value);
   deck.highFilter.value = Number(value);
-  deck.wavesurfer.value?.zoom(value);
 };
 const applyMidFilter = (value: string) => {
   const filter = deck.wavesurfer.value
@@ -54,18 +58,32 @@ const applyMidFilter = (value: string) => {
     {{ deck.trackId.value ? deck.title.value : "No Track Loaded" }}
     <slot></slot>
     <div class="mt-4 flex flex-col items-center justify-center">
+      <div class="mt-4 flex flex-row items-center justify-center">
+        <BackwardIcon
+          v-if="deck.isWaveformReady.value"
+          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          @click="deck.wavesurfer.value?.skip(-0.5)"
+        />
+        <BackwardIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+        <PauseCircleIcon
+          v-if="deck.isWaveformReady.value && deck.isPlaying.value"
+          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          @click="pause()"
+        />
+        <PlayCircleIcon
+          v-else-if="deck.isWaveformReady.value && !deck.isPlaying.value"
+          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          @click="play"
+        />
+        <PlayCircleIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+        <ForwardIcon
+          v-if="deck.isWaveformReady.value"
+          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          @click="deck.wavesurfer.value?.skip(0.5)"
+        />
+        <ForwardIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+      </div>
       <p class="font-bold">BPM: {{ liveBpm }}</p>
-      <PauseCircleIcon
-        v-if="deck.isWaveformReady.value && deck.isPlaying.value"
-        class="text-blue-400 h-11 w-11 m-2 cursor-pointer"
-        @click="pause()"
-      />
-      <PlayCircleIcon
-        v-else-if="deck.isWaveformReady.value && !deck.isPlaying.value"
-        class="text-blue-400 h-11 w-11 m-2 cursor-pointer"
-        @click="play"
-      />
-      <PlayCircleIcon v-else class="text-gray-400 h-11 w-11 m-2" />
     </div>
 
     <RangeSlider
