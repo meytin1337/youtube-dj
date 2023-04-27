@@ -56,7 +56,7 @@ const downloadVideo = async () => {
 
 <template>
   <div
-    class="m-5 relative h-11 w-1/3 min-w-[200px] flex flex-col justify-center"
+    class="w-5/6 mr-auto ml-auto m-5 relative h-11 min-w-[200px] flex flex-col justify-center"
   >
     <div class="flex relative h-full w-full">
       <input
