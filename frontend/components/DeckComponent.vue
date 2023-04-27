@@ -4,8 +4,10 @@ import {
   PauseCircleIcon,
   ForwardIcon,
   BackwardIcon,
-  MagnifyingGlassPlusIcon,
-  MagnifyingGlassMinusIcon 
+  PlusCircleIcon,
+  MinusCircleIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
 } from "@heroicons/vue/24/solid";
 interface Props {
   deck: number;
@@ -60,113 +62,113 @@ const zoom = (value: string) => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col justify-center items-center m-2">
-    {{ deck.trackId.value ? deck.title.value : "No Track Loaded" }}
+  <div
+    class="bg-gray-100 border p-3 w-full flex flex-col justify-center items-center space-y-2"
+  >
+    <p class="font-bold">
+      {{ deck.trackId.value ? deck.title.value : "No Track Loaded" }}
+    </p>
     <slot></slot>
-    <div class="mt-4 flex flex-col items-center justify-center">
-      <div class="mt-4 flex flex-row items-center justify-center">
-        <MagnifyingGlassMinusIcon
+    <div class="flex flex-col items-center justify-center">
+      <p class="font-italic mt-4">BPM: {{ liveBpm }}</p>
+      <div class="flex flex-row items-center justify-center">
+        <MinusCircleIcon
           v-if="deck.isWaveformReady.value"
-          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="zoom('-1')"
         />
-        <MagnifyingGlassMinusIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+        <MinusCircleIcon v-else class="text-gray-300 h-11 w-11 m-2" />
         <BackwardIcon
           v-if="deck.isWaveformReady.value"
-          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="deck.wavesurfer.value?.skip(-0.5)"
         />
-        <BackwardIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+        <BackwardIcon v-else class="text-gray-300 h-11 w-11 m-2" />
         <PauseCircleIcon
           v-if="deck.isWaveformReady.value && deck.isPlaying.value"
-          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="pause()"
         />
         <PlayCircleIcon
           v-else-if="deck.isWaveformReady.value && !deck.isPlaying.value"
-          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="play"
         />
-        <PlayCircleIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+        <PlayCircleIcon v-else class="text-gray-300 h-11 w-11 m-2" />
         <ForwardIcon
           v-if="deck.isWaveformReady.value"
-          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="deck.wavesurfer.value?.skip(0.5)"
         />
-        <ForwardIcon v-else class="text-gray-400 h-11 w-11 m-2" />
-        <MagnifyingGlassPlusIcon
+        <ForwardIcon v-else class="text-gray-300 h-11 w-11 m-2" />
+        <PlusCircleIcon
           v-if="deck.isWaveformReady.value"
-          class="text-blue-600 h-11 w-11 m-2 cursor-pointer"
+          class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="zoom('1')"
         />
-        <MagnifyingGlassPlusIcon v-else class="text-gray-400 h-11 w-11 m-2" />
+        <PlusCircleIcon v-else class="text-gray-300 h-11 w-11 m-2" />
       </div>
-      <p class="font-bold">BPM: {{ liveBpm }}</p>
     </div>
 
-    <RangeSlider
-      class="w-5/6"
-      type="volume"
-      :min="0"
-      :max="1"
-      :step="'any'"
-      :value="String(deck.volume.value)"
-      :disabled="!deck.trackId.value"
-      emit="setVolume"
-      @set-volume="setVolume"
-      >Volume: {{ Math.round(deck.volume.value * 100) }}%</RangeSlider
-    >
-    <RangeSlider
-      type="rate"
-      class="w-5/6"
-      :min="0.5"
-      :max="2"
-      :step="'any'"
-      :value="String(deck.rate.value)"
-      :disabled="!deck.trackId.value"
-      emit="setRate"
-      @set-rate="setRate"
-      >Speed: {{ Math.round(100 * deck.rate.value) / 100 }}x</RangeSlider
-    >
-    <RangeSlider
-      type="lowFilter"
-      class="w-5/6"
-      :min="-40"
-      :max="40"
-      :step="'any'"
-      :value="String(deck.lowFilter.value)"
-      :disabled="!deck.isWaveformReady.value"
-      emit="applyLowFilter"
-      @apply-low-filter="applyLowFilter"
-      >Low Filter:
-      {{ Math.round(100 * deck.lowFilter.value) / 100 }}dB</RangeSlider
-    >
-    <RangeSlider
-      type="midFilter"
-      class="w-5/6"
-      :min="-40"
-      :max="40"
-      :step="'any'"
-      :value="String(deck.midFilter.value)"
-      :disabled="!deck.isWaveformReady.value"
-      emit="applyMidFilter"
-      @apply-mid-filter="applyMidFilter"
-      >Mid Filter:
-      {{ Math.round(100 * deck.midFilter.value) / 100 }}dB</RangeSlider
-    >
-    <RangeSlider
-      type="highFilter"
-      class="w-5/6"
-      :min="-40"
-      :max="40"
-      :step="'any'"
-      :value="String(deck.highFilter.value)"
-      :disabled="!deck.isWaveformReady.value"
-      emit="applyHighFilter"
-      @apply-high-filter="applyHighFilter"
-      >High Filter:
-      {{ Math.round(100 * deck.highFilter.value) / 100 }}dB</RangeSlider
-    >
+    <div class="flex justify-around w-full">
+      <PotentionmeterComponent
+        :min="0"
+        :max="1"
+        :initial-value="deck.volume.value"
+        :disabled="!deck.isWaveformReady.value"
+        @rotate="setVolume"
+        ><div v-if="deck.volume.value > 0" class="flex">
+          Volume {{ Math.round(100 * deck.volume.value) }}%
+          <SpeakerWaveIcon class="w-5 ml-1"></SpeakerWaveIcon>
+        </div>
+        <div v-else class="flex">
+          Muted
+          <SpeakerXMarkIcon class="w-5 ml-1"></SpeakerXMarkIcon>
+        </div>
+      </PotentionmeterComponent>
+      <PotentionmeterComponent
+        :min="0.5"
+        :max="2"
+        :initial-value="deck.rate.value"
+        :disabled="!deck.isWaveformReady.value"
+        @rotate="setRate"
+        >Playback Rate:
+        {{ Math.round(100 * deck.rate.value) / 100 }}x</PotentionmeterComponent
+      >
+      <PotentionmeterComponent
+        :min="-40"
+        :max="40"
+        :initial-value="deck.lowFilter.value"
+        :disabled="!deck.isWaveformReady.value"
+        @rotate="applyLowFilter"
+        >Low Filter:
+        {{
+          Math.round(100 * deck.lowFilter.value) / 100
+        }}dB</PotentionmeterComponent
+      >
+      <PotentionmeterComponent
+        :min="-40"
+        :max="40"
+        :initial-value="deck.midFilter.value"
+        :disabled="!deck.isWaveformReady.value"
+        @rotate="applyMidFilter"
+        >Mid Filter:
+        {{
+          Math.round(100 * deck.midFilter.value) / 100
+        }}dB</PotentionmeterComponent
+      >
+      <PotentionmeterComponent
+        :min="-40"
+        :max="40"
+        :initial-value="deck.highFilter.value"
+        :disabled="!deck.isWaveformReady.value"
+        @rotate="applyHighFilter"
+        >High Filter:
+        {{
+          Math.round(100 * deck.highFilter.value) / 100
+        }}dB</PotentionmeterComponent
+      >
+    </div>
   </div>
 </template>
 
