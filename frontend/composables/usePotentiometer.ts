@@ -1,57 +1,50 @@
-export const usePotentionmeter = (min: number, max: number, result: Ref) => {
-  const offset = Math.PI / 3;
-  const element = ref<HTMLDivElement | null>(null);
-  const angle = ref<number>(resultToAngle(result.value));
-  function getRotation(event: MouseEvent | TouchEvent): number {
-    const { clientX, clientY } = event;
-    const { left, top, width, height } = element.value.getBoundingClientRect();
+interface Potentiometer {
+  resultToRotation: (result: number) => number;
+  getRotation: (
+    clientX: number,
+    clientY: number,
+    left: number,
+    top: number,
+    width: number,
+    height: number
+  ) => number;
+  rotationToResult: (rotation: number) => number;
+}
+export function usePotentionmeter(min: number, max: number): Potentiometer {
+  // we want the range of motion to be 3/4 of a circle
+  // therefore we need this offset in the calculation
+  function getRotation(
+    clientX: number,
+    clientY: number,
+    left: number,
+    top: number,
+    width: number,
+    height: number
+  ): number {
+    // x = pixels to the right of the center of the div
     const x = clientX - (left + width / 2);
+    // y = pixels to the top of the center of the div
     const y = -(clientY - (top + height / 2));
-    // rotate 300 degrees
-    const rotatedX =
-      x * Math.cos((Math.PI * 5) / 3) - y * Math.sin((Math.PI * 5) / 3);
-    const rotatedY =
-      x * Math.sin((Math.PI * 5) / 3) + y * Math.cos((Math.PI * 5) / 3);
-    const rotation = Math.atan2(rotatedX, rotatedY);
-    if (rotation + offset < 0 && angle.value < 0) {
-      return -offset;
-    }
-    if (rotation + offset < 0 && angle.value > 0) {
-      return Math.PI;
+    const rotation = Math.atan2(x, y);
+    // this is true for the lower third of the circle
+    if (rotation > (2 * Math.PI) / 3) {
+      return (2 * Math.PI) / 3;
+    } else if (rotation < -(2 * Math.PI) / 3) {
+      return -((2 * Math.PI) / 3);
     }
     return rotation;
   }
-  function angleToResult(angle: number) {
+  function rotationToResult(rotation: number) {
     return (
-      min * (1 - (angle + offset) / ((Math.PI * 4) / 3)) +
-      ((angle + offset) / ((Math.PI * 4) / 3)) * max
+      (min * (1 - rotation / ((Math.PI * 2) / 3))) / 2 +
+      (max * (1 + rotation / ((Math.PI * 2) / 3))) / 2
     );
   }
-  function resultToAngle(result: number) {
-    return ((result - min) / (max - min)) * ((Math.PI * 4) / 3) - offset;
+  function resultToRotation(result: number) {
+    return (
+      // The first part returns 0 for result = min and 1 for result = max
+      ((result - min) / (max - min)) * ((Math.PI * 4) / 3) - (Math.PI * 2) / 3
+    );
   }
-  function startDrag(event: MouseEvent | TouchEvent) {
-    event.preventDefault();
-    if (!(event.target instanceof HTMLDivElement)) return;
-    element.value = event.target;
-    angle.value = getRotation(event);
-    document.addEventListener("mousemove", drag);
-    document.addEventListener("touchmove", drag);
-    document.addEventListener("mouseup", stopDrag);
-    document.addEventListener("touchend", stopDrag);
-  }
-  function drag(event: MouseEvent) {
-    event.preventDefault();
-    angle.value = getRotation(event);
-    result.value = angleToResult(angle.value);
-  }
-
-  function stopDrag() {
-    document.removeEventListener("mousemove", drag);
-    document.removeEventListener("touchmove", drag);
-    document.removeEventListener("mouseup", stopDrag);
-    document.removeEventListener("touchend", stopDrag);
-  }
-
-  return { startDrag, angle, result, resultToAngle };
-};
+  return { resultToRotation, getRotation, rotationToResult };
+}

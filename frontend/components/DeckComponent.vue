@@ -111,7 +111,7 @@ const zoom = (value: string) => {
     </div>
 
     <div class="flex justify-around w-full">
-      <PotentionmeterComponent
+      <PotentiometerComponent
         :min="0"
         :max="1"
         :initial-value="deck.volume.value"
@@ -125,17 +125,17 @@ const zoom = (value: string) => {
           Muted
           <SpeakerXMarkIcon class="w-5 ml-1"></SpeakerXMarkIcon>
         </div>
-      </PotentionmeterComponent>
-      <PotentionmeterComponent
+      </PotentiometerComponent>
+      <PotentiometerComponent
         :min="0.5"
         :max="2"
         :initial-value="deck.rate.value"
         :disabled="!deck.isWaveformReady.value"
         @rotate="setRate"
         >Playback Rate:
-        {{ Math.round(100 * deck.rate.value) / 100 }}x</PotentionmeterComponent
+        {{ Math.round(100 * deck.rate.value) / 100 }}x</PotentiometerComponent
       >
-      <PotentionmeterComponent
+      <PotentiometerComponent
         :min="-40"
         :max="40"
         :initial-value="deck.lowFilter.value"
@@ -144,9 +144,9 @@ const zoom = (value: string) => {
         >Low Filter:
         {{
           Math.round(100 * deck.lowFilter.value) / 100
-        }}dB</PotentionmeterComponent
+        }}dB</PotentiometerComponent
       >
-      <PotentionmeterComponent
+      <PotentiometerComponent
         :min="-40"
         :max="40"
         :initial-value="deck.midFilter.value"
@@ -155,9 +155,9 @@ const zoom = (value: string) => {
         >Mid Filter:
         {{
           Math.round(100 * deck.midFilter.value) / 100
-        }}dB</PotentionmeterComponent
+        }}dB</PotentiometerComponent
       >
-      <PotentionmeterComponent
+      <PotentiometerComponent
         :min="-40"
         :max="40"
         :initial-value="deck.highFilter.value"
@@ -166,7 +166,18 @@ const zoom = (value: string) => {
         >High Filter:
         {{
           Math.round(100 * deck.highFilter.value) / 100
-        }}dB</PotentionmeterComponent
+        }}dB</PotentiometerComponent
+      >
+      <PotentiometerComponent
+        :min="-40"
+        :max="40"
+        :initial-value="deck.highFilter.value"
+        :disabled="false"
+        @rotate="applyHighFilter"
+        >High Filter:
+        {{
+          Math.round(100 * deck.highFilter.value) / 100
+        }}dB</PotentiometerComponent
       >
     </div>
   </div>
