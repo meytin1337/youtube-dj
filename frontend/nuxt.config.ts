@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
+  modules: ["nuxt-vitest"],
   runtimeConfig: {
     public: {
       api: "https://youtube-dj.ddns.net/",
