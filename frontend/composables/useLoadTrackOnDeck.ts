@@ -1,77 +1,91 @@
 import { analyze } from "web-audio-beat-detector";
+import { WaveSurferOptions } from "wavesurfer.js";
 import { Deck } from "./states";
 
-const options = {
+const options = <WaveSurferOptions>{
   waveColor: "lightblue",
   progressColor: "darkblue",
   cursorColor: "navy",
   hideScrollbar: true,
   minPxPerSec: 50,
+  fillParent: false,
 };
 export async function useLoadTrackOnDeck(
   deck: Deck,
   file: Blob,
   trackId: string,
   container: HTMLDivElement,
-  title: string
+  audio: HTMLAudioElement,
+  title: string,
 ): Promise<void> {
   const WaveSurfer = (await import("wavesurfer.js")).default;
-  const fileUrl = URL.createObjectURL(file);
+  audio.src = URL.createObjectURL(file);
   const wavesurfer = WaveSurfer.create({
     ...options,
     container,
+    media: audio,
   });
-  deck.wavesurfer.value?.destroy();
-  deck.trackId.value = trackId;
-  deck.title.value = title;
-  wavesurfer.load(fileUrl);
-  wavesurfer.setVolume(deck.volume.value);
-  wavesurfer.setPlaybackRate(deck.rate.value);
-  wavesurfer.zoom(deck.zoom.value);
+  if (deck.wavesurfer) {
+    deck.wavesurfer.destroy();
+  }
+  deck.trackId = trackId;
+  deck.title = title;
   wavesurfer.on("ready", async () => {
-    deck.isWaveformReady.value = true;
-    deck.bpm.value = await analyze(wavesurfer.backend?.buffer);
+    wavesurfer.setVolume(deck.volume);
+    wavesurfer.zoom(deck.zoom);
+    deck.isWaveformReady = true;
+    // deck.bpm = await analyze(wavesurfer.getDecodedData());
   });
   wavesurfer.on("play", () => {
-    deck.isPlaying.value = true;
+    deck.isPlaying = true;
   });
   wavesurfer.on("pause", () => {
-    deck.isPlaying.value = false;
+    deck.isPlaying = false;
   });
   wavesurfer.on("finish", () => {
-    deck.isPlaying.value = false;
+    deck.isPlaying = false;
   });
   wavesurfer.on("destroy", () => {
-    deck.isPlaying.value = false;
-    deck.isWaveformReady.value = false;
+    deck.isPlaying = false;
+    deck.isWaveformReady = false;
   });
-  const ctx = wavesurfer.backend.ac;
-  const lowFilter = ctx.createBiquadFilter();
-  const highFilter = ctx.createBiquadFilter();
-  const midFilter = ctx.createBiquadFilter();
-  wavesurfer.backend.setFilter(
-    applyLowFilter(lowFilter, deck.lowFilter.value),
-    applyHighFilter(highFilter, deck.highFilter.value),
-    applyMidFilter(midFilter, deck.midFilter.value)
-  );
-  deck.wavesurfer.value = wavesurfer;
+
+  const ctx = new AudioContext();
+  if (deck.filters.length === 0) {
+    deck.filters = [
+      createLowFilter(ctx, 0),
+      createMidFilter(ctx, 0),
+      createHighFilter(ctx, 0),
+    ];
+  }
+
+  const mediaNode = ctx.createMediaElementSource(audio);
+  const equalizer = deck.filters.reduce((prev, curr) => {
+    prev.connect(curr);
+    return curr;
+  }, mediaNode);
+  equalizer.connect(ctx.destination);
+  deck.wavesurfer = wavesurfer;
 }
 
-const applyLowFilter = (filter: BiquadFilterNode, value: number) => {
+const createLowFilter = (ctx: AudioContext, value: number) => {
+  const filter = ctx.createBiquadFilter();
   filter.type = "lowshelf";
   filter.frequency.value = 500;
   filter.gain.value = value;
   return filter;
 };
 
-const applyHighFilter = (filter: BiquadFilterNode, value: number) => {
+const createHighFilter = (ctx: AudioContext, value: number) => {
+  const filter = ctx.createBiquadFilter();
   filter.type = "highshelf";
   filter.frequency.value = 1500;
   filter.gain.value = value;
   return filter;
 };
 
-const applyMidFilter = (filter: BiquadFilterNode, value: number) => {
+const createMidFilter = (ctx: AudioContext, value: number) => {
+  const filter = ctx.createBiquadFilter();
   filter.type = "peaking";
   filter.frequency.value = 1000;
   filter.gain.value = value;

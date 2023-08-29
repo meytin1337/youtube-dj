@@ -5,20 +5,34 @@ const youtubeLink = useState("youtubeLink", () => "");
 
 const tracks = useTracks();
 const waveFormContainerDeckOne = ref<HTMLDivElement | null>(null);
+const waveFormAudioDeckOne = ref<HTMLAudioElement | null>(null);
 const waveFormContainerDeckTwo = ref<HTMLDivElement | null>(null);
+const waveFormAudioDeckTwo = ref<HTMLAudioElement | null>(null);
 const loadTrack = (
   deck: number,
   file: Blob,
   trackId: string,
-  title: string
+  title: string,
 ) => {
-  const activeDeck = deck === 1 ? useDeckOne() : useDeckTwo();
+  const deckOne = useDeckOne();
+  const deckTwo = useDeckTwo();
+  const activeDeck = deck === 1 ? deckOne : deckTwo;
   const activeWaveFormContainer =
     deck === 1
       ? waveFormContainerDeckOne.value
       : waveFormContainerDeckTwo.value;
-  if (!activeWaveFormContainer) throw createError("No Waveform Container");
-  useLoadTrackOnDeck(activeDeck, file, trackId, activeWaveFormContainer, title);
+  const activeAudioElement =
+    deck === 1 ? waveFormAudioDeckOne.value : waveFormAudioDeckTwo.value;
+  if (!activeWaveFormContainer || !activeAudioElement)
+    throw createError("No Waveform Container or Audio Element");
+  useLoadTrackOnDeck(
+    activeDeck.value,
+    file,
+    trackId,
+    activeWaveFormContainer,
+    activeAudioElement,
+    title,
+  );
 };
 const resetError = (error: NuxtError) => {
   youtubeLink.value = "";
@@ -27,20 +41,24 @@ const resetError = (error: NuxtError) => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center space-y-4">
+  <div class="select-none flex flex-col items-center justify-center space-y-4">
     <div class="flex flex-col w-full">
       <div class="flex justify-center">
         <DeckComponent :deck="1">
           <div
             ref="waveFormContainerDeckOne"
             class="h-28 border border-gray-500 w-full"
-          ></div>
+          >
+            <audio ref="waveFormAudioDeckOne"></audio>
+          </div>
         </DeckComponent>
         <DeckComponent :deck="2">
           <div
             ref="waveFormContainerDeckTwo"
             class="h-28 border border-gray-500 w-full"
-          ></div>
+          >
+            <audio ref="waveFormAudioDeckTwo"></audio>
+          </div>
         </DeckComponent>
       </div>
       <div class="w-1/2 mr-auto ml-auto">

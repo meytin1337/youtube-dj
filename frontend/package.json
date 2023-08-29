@@ -23,10 +23,12 @@
     "autoprefixer": "^10.4.14",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "nuxt": "^3.4.1",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vitest": "^0.2.6",
+    "nuxt": "^3.7.0",
     "nuxt-vitest": "^0.8.5",
     "postcss": "^8.4.23",
+    "prettier": "^3.0.0",
     "tailwindcss": "^3.3.1",
     "typescript": "^5.0.4",
     "vitest": "^0.31.4",
@@ -36,7 +38,7 @@
     "@heroicons/vue": "^2.0.17",
     "@material-tailwind/html": "^2.0.0",
     "flowbite": "^1.6.5",
-    "wavesurfer.js": "^6.6.3",
+    "wavesurfer.js": "^7.1.5",
     "web-audio-beat-detector": "^8.1.44"
   }
 }

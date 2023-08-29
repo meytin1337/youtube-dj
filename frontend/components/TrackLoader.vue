@@ -73,14 +73,9 @@ const downloadVideo = async () => {
       <ArrowDownTrayIcon
         v-else-if="isValid"
         class="w-9 h-9 text-blue-500 cursor-pointer"
-        disabled="isButtonDisabled"
         @click="downloadVideo"
       />
-      <ArrowDownTrayIcon
-        v-else
-        class="w-9 h-9 text-gray-400"
-        disabled="isButtonDisabled"
-      />
+      <ArrowDownTrayIcon v-else class="w-9 h-9 text-gray-400" />
     </div>
   </div>
 </template>
