@@ -38,7 +38,7 @@
     "@heroicons/vue": "^2.0.17",
     "@material-tailwind/html": "^2.0.0",
     "flowbite": "^1.6.5",
-    "wavesurfer.js": "^7.1.5",
-    "web-audio-beat-detector": "^8.1.44"
+    "wavesurfer.js": "^7.3.2",
+    "web-audio-beat-detector": "^8.1.53"
   }
 }
