@@ -34,7 +34,8 @@ export async function useLoadTrackOnDeck(
     wavesurfer.setVolume(deck.volume);
     wavesurfer.zoom(deck.zoom);
     deck.isWaveformReady = true;
-    // deck.bpm = await analyze(wavesurfer.getDecodedData());
+    deck.bpm = await analyze(wavesurfer.getDecodedData());
+    console.log(deck.bpm);
   });
   wavesurfer.on("play", () => {
     deck.isPlaying = true;
