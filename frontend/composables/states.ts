@@ -16,20 +16,22 @@ export interface Deck {
   isPlaying: Boolean;
   title: string;
   bpm: number;
+  firstBeatOffset: number;
   ctx: AudioContext | undefined;
-  filters: Array<BiquadFilterNode>;
+  highFilter: BiquadFilterNode | undefined;
+  lowFilter: BiquadFilterNode | undefined;
+  midFilter: BiquadFilterNode | undefined;
   zoom: number;
 }
 
 export const useTracks = () => {
-  return useState<Track[]>("tracks", () => [
-    
-  ]);
+  return useState<Track[]>("tracks", () => []);
 };
 
-export const useDeckOne = (): Ref<Deck> => {
-  return useState<Deck>("deckOne", (): Deck => {
+export const useDeckOne = () => {
+  return useState<Deck>("deckOne", () => {
     return {
+      firstBeatOffset: 0,
       id: 0,
       wavesurfer: undefined,
       trackId: "",
@@ -40,15 +42,18 @@ export const useDeckOne = (): Ref<Deck> => {
       bpm: 0,
       title: "",
       ctx: undefined,
-      filters: [],
+      highFilter: undefined,
+      lowFilter: undefined,
+      midFilter: undefined,
       zoom: 100,
     };
   });
 };
 
-export const useDeckTwo = (): Ref<Deck> => {
-  return useState<Deck>("deckTwo", (): Deck => {
+export const useDeckTwo = () => {
+  return useState<Deck>("deckTwo", () => {
     return {
+      firstBeatOffset: 0,
       id: 0,
       wavesurfer: undefined,
       trackId: "",
@@ -59,7 +64,9 @@ export const useDeckTwo = (): Ref<Deck> => {
       bpm: 0,
       title: "",
       ctx: undefined,
-      filters: [],
+      highFilter: undefined,
+      lowFilter: undefined,
+      midFilter: undefined,
       zoom: 100,
     };
   });

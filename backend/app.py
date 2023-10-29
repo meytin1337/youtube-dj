@@ -58,18 +58,23 @@ ydl_opts = {
 @app.route("/download/<id>/file")
 def download_file(id):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        x = ydl.download(["https://youtube.com/watch?v=" + id])
+        ydl.download(["https://youtube.com/watch?v=" + id])
+
     @after_this_request
     def remove_file(response):
-            try:
-                os.remove(m4a_path)
-            except Exception as error:
-                app.logger.error("Error removing or closing downloaded file handle", error)
-            return response
-    return send_file(m4a_path, mimetype="audio/mp4", as_attachment=True)
+        try:
+            os.remove(m4a_path)
+        except Exception as error:
+            app.logger.error("Error removing or closing downloaded file handle", error)
+        return response
+
+    return send_file(m4a_path, mimetype="audio/m4a", as_attachment=True)
+
 
 @app.route("/download/<id>/trackinfo")
 def get_track_info(id):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        track_info = ydl.extract_info("https://youtube.com/watch?v=" + id, download=False)
-    return track_info 
+        track_info = ydl.extract_info(
+            "https://youtube.com/watch?v=" + id, download=False
+        )
+    return track_info

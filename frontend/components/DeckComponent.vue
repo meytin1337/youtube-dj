@@ -1,19 +1,14 @@
 <script lang="ts" setup>
+import RegionsPlugin from "wavesurfer.js/dist/plugins/regions";
 interface Props {
   deck: number;
 }
 const props = defineProps<Props>();
 const deck = props.deck === 1 ? useDeckOne().value : useDeckTwo().value;
 const liveBpm = computed(() => Math.floor(deck.bpm * deck.rate * 100) / 100);
-const lowFilterGain = ref(
-  deck.filters.find((filter) => filter.type === "lowshelf")?.gain.value,
-);
-const midFilterGain = ref(
-  deck.filters.find((filter) => filter.type === "peaking")?.gain.value,
-);
-const highFilterGain = ref(
-  deck.filters.find((filter) => filter.type === "highshelf")?.gain.value,
-);
+const lowFilterGain = ref(deck.lowFilter?.gain.value || 0);
+const midFilterGain = ref(deck.midFilter?.gain.value || 0);
+const highFilterGain = ref(deck.highFilter?.gain.value || 0);
 const lowFilterValue = computed(() => {
   return lowFilterGain.value || 0;
 });
@@ -38,26 +33,66 @@ const play = () => {
   deck.wavesurfer?.play();
 };
 const applyLowFilter = (value: string) => {
-  const lowFilter = deck.filters.find((filter) => filter.type === "lowshelf");
-  if (!lowFilter) return;
-  lowFilter.gain.value = Number(value);
+  if (!deck.lowFilter) return;
+  deck.lowFilter.gain.value = Number(value);
   lowFilterGain.value = Number(value);
 };
 const applyHighFilter = (value: string) => {
-  const highFilter = deck.filters.find((filter) => filter.type === "highshelf");
-  if (!highFilter) return;
-  highFilter.gain.value = Number(value);
+  if (!deck.highFilter) return;
+  deck.highFilter.gain.value = Number(value);
   highFilterGain.value = Number(value);
 };
 const applyMidFilter = (value: string) => {
-  const midFilter = deck.filters.find((filter) => filter.type === "peaking");
-  if (!midFilter) return;
-  midFilter.gain.value = Number(value);
+  if (!deck.midFilter) return;
+  deck.midFilter.gain.value = Number(value);
   midFilterGain.value = Number(value);
 };
 const zoom = (value: string) => {
   deck.zoom = deck.zoom + Number(value);
   deck.wavesurfer?.zoom(deck.zoom);
+};
+const loop = () => {
+  if (!deck.wavesurfer) return;
+  const regions = deck.wavesurfer
+    ?.getActivePlugins()
+    .find((plugin) => plugin?.regions) as RegionsPlugin | undefined;
+  if (!regions) return;
+  regions.clearRegions();
+  const nextBeat = useCalculateNextBeat(deck);
+  // we add a 30ms offset here
+  // because we want to loop before the kick
+  const start = deck.wavesurfer?.getCurrentTime() + nextBeat - 0.03;
+  // the offset here is 45ms because we need a 15ms timeout
+  // before jumping to the beginning of the loop to decrease distortion
+  const end = start + (4 * 60) / deck.bpm - 0.045;
+  regions.addRegion({
+    start,
+    end,
+    drag: false,
+    resize: false,
+  });
+  regions.on("region-out", (region) => {
+    if (!deck.highFilter || !deck.midFilter || !deck.lowFilter) return;
+    // this lowers distortion
+    deck.highFilter.gain.value = -100;
+    deck.midFilter.gain.value = -100;
+    deck.lowFilter.gain.value = -100;
+    setTimeout(() => region.play(), 15);
+  });
+  regions.on("region-in", () => {
+    setTimeout(() => {
+      if (!deck.highFilter) return;
+      deck.highFilter.gain.value = highFilterGain.value;
+    }, 10);
+    setTimeout(() => {
+      if (!deck.midFilter) return;
+      deck.midFilter.gain.value = midFilterGain.value;
+    }, 10);
+    setTimeout(() => {
+      if (!deck.lowFilter) return;
+      deck.lowFilter.gain.value = lowFilterGain.value;
+    }, 10);
+  });
 };
 </script>
 
@@ -189,6 +224,7 @@ const zoom = (value: string) => {
         {{ Math.round(100 * highFilterValue) / 100 }}dB</PotentiometerComponent
       >
     </div>
+    <button @click="loop">Loop next 4 beats</button>
   </div>
 </template>
 

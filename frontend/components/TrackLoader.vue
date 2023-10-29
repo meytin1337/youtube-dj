@@ -5,7 +5,7 @@ interface TrackInfoResponse {
   id: string;
 }
 
-const youtubeLink = ref("");
+const youtubeLink = ref("https://www.youtube.com/watch?v=5IrHzrg4qdQ");
 const tracks = useTracks();
 const isDownloading = ref(false);
 const runtimeConfig = useRuntimeConfig();

@@ -1,14 +1,9 @@
 <script lang="ts" setup>
-const youtubeLink = useState(
-  "youtubeLink",
-  () => "https://www.youtube.com/watch?v=5IrHzrg4qdQ",
-);
-
 const tracks = useTracks();
-const waveFormContainerDeckOne = ref<HTMLDivElement | null>(null);
-const waveFormAudioDeckOne = ref<HTMLAudioElement | null>(null);
-const waveFormContainerDeckTwo = ref<HTMLDivElement | null>(null);
-const waveFormAudioDeckTwo = ref<HTMLAudioElement | null>(null);
+const waveFormContainerDeckOne = ref(null);
+const waveFormAudioDeckOne = ref(null);
+const waveFormContainerDeckTwo = ref(null);
+const waveFormAudioDeckTwo = ref(null);
 const loadTrack = (
   deck: number,
   file: Blob,
