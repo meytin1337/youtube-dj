@@ -12,11 +12,11 @@ const isValid = computed(() => youtubeLink.value !== "");
 const isDownloading = ref(false);
 const runtimeConfig = useRuntimeConfig();
 
-const downloadVideo = async () => {
+const downloadTrack = async () => {
   const videoId = youtubeLink.value.split("v=")[1];
   isDownloading.value = true;
   const trackInfoResponse = await useFetch<TrackInfoResponse>(
-    runtimeConfig.public.api + "download/" + videoId + "/trackinfo"
+    runtimeConfig.public.api + "download/" + videoId + "/trackinfo",
   );
   if (trackInfoResponse.error.value)
     throw createError({
@@ -34,7 +34,7 @@ const downloadVideo = async () => {
     });
   }
   const fileResponse = await useFetch<Blob>(
-    runtimeConfig.public.api + "download/" + videoId + "/file"
+    runtimeConfig.public.api + "download/" + videoId + "/file",
   );
   if (fileResponse.error.value)
     throw createError({
@@ -52,6 +52,9 @@ const downloadVideo = async () => {
   });
   isDownloading.value = false;
 };
+onMounted(() => {
+  downloadTrack("https://www.youtube.com/watch?v=5IrHzrg4qdQ");
+});
 </script>
 
 <template>
@@ -73,7 +76,7 @@ const downloadVideo = async () => {
       <ArrowDownTrayIcon
         v-else-if="isValid"
         class="w-9 h-9 text-blue-500 cursor-pointer"
-        @click="downloadVideo"
+        @click="downloadTrack"
       />
       <ArrowDownTrayIcon v-else class="w-9 h-9 text-gray-400" />
     </div>
