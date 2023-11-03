@@ -3,18 +3,14 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
-  modules: ["nuxt-vitest"],
+  modules: ["nuxt-vitest", "@nuxt/ui"],
   runtimeConfig: {
     public: {
       api: "https://youtube-dj.ddns.net/",
     },
   },
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
-  css: ["~/assets/css/main.css"],
   ssr: false,
+  colorMode: {
+    preference: "light",
+  },
 });
