@@ -1,14 +1,4 @@
 <script lang="ts" setup>
-import {
-  PlayCircleIcon,
-  PauseCircleIcon,
-  ForwardIcon,
-  BackwardIcon,
-  PlusCircleIcon,
-  MinusCircleIcon,
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon,
-} from "@heroicons/vue/24/solid";
 interface Props {
   deck: number;
 }
@@ -82,41 +72,67 @@ const zoom = (value: string) => {
     <div class="flex flex-col items-center justify-center">
       <p class="font-italic mt-4">BPM: {{ liveBpm }}</p>
       <div class="flex flex-row items-center justify-center">
-        <MinusCircleIcon
+        <UIcon
           v-if="deck.isWaveformReady"
+          name="i-heroicons-plus-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="zoom('-1')"
         />
-        <MinusCircleIcon v-else class="text-gray-300 h-11 w-11 m-2" />
-        <BackwardIcon
+        <UIcon
+          v-else
+          name="i-heroicons-minus-circle"
+          class="text-gray-300 h-11 w-11 m-2"
+        />
+        <UIcon
           v-if="deck.isWaveformReady"
+          name="i-heroicons-backward"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="deck.wavesurfer?.skip(-0.5)"
         />
-        <BackwardIcon v-else class="text-gray-300 h-11 w-11 m-2" />
-        <PauseCircleIcon
+        <UIcon
+          v-else
+          name="i-heroicons-backward"
+          class="text-gray-300 h-11 w-11 m-2"
+        />
+        <UIcon
           v-if="deck.isWaveformReady && deck.isPlaying"
+          name="i-heroicons-play-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="pause()"
         />
-        <PlayCircleIcon
+        <UIcon
           v-else-if="deck.isWaveformReady && !deck.isPlaying"
+          name="i-heroicons-play-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="play"
         />
-        <PlayCircleIcon v-else class="text-gray-300 h-11 w-11 m-2" />
-        <ForwardIcon
+        <UIcon
+          v-else
+          name="i-heroicons-play-circle"
+          class="text-gray-300 h-11 w-11 m-2"
+        />
+        <UIcon
           v-if="deck.isWaveformReady"
+          name="i-heroicons-forward"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="deck.wavesurfer?.skip(0.5)"
         />
-        <ForwardIcon v-else class="text-gray-300 h-11 w-11 m-2" />
-        <PlusCircleIcon
+        <UIcon
+          v-else
+          name="i-heroicons-forward"
+          class="text-gray-300 h-11 w-11 m-2"
+        />
+        <UIcon
           v-if="deck.isWaveformReady"
+          name="i-heroicons-plus-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
           @click="zoom('1')"
         />
-        <PlusCircleIcon v-else class="text-gray-300 h-11 w-11 m-2" />
+        <UIcon
+          v-else
+          name="i-heroicons-plus-circle"
+          class="text-gray-300 h-11 w-11 m-2"
+        />
       </div>
     </div>
 
@@ -129,11 +145,11 @@ const zoom = (value: string) => {
         @rotate="setVolume"
         ><div v-if="deck.volume > 0" class="flex">
           Volume {{ Math.round(100 * deck.volume) }}%
-          <SpeakerWaveIcon class="w-5 ml-1"></SpeakerWaveIcon>
+          <UIcon name="i-heroicons-speaker-wave" class="w-5 ml-1"></UIcon>
         </div>
         <div v-else class="flex">
           Muted
-          <SpeakerXMarkIcon class="w-5 ml-1"></SpeakerXMarkIcon>
+          <UIcon name="i-heroicons-speaker-x-mark" class="w-5 ml-1"></UIcon>
         </div>
       </PotentiometerComponent>
       <PotentiometerComponent
