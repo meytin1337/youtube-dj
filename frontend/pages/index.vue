@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { NuxtError } from "#app";
-
-const youtubeLink = useState("youtubeLink", () => "");
+const youtubeLink = useState(
+  "youtubeLink",
+  () => "https://www.youtube.com/watch?v=5IrHzrg4qdQ",
+);
 
 const tracks = useTracks();
 const waveFormContainerDeckOne = ref<HTMLDivElement | null>(null);
@@ -23,8 +24,7 @@ const loadTrack = (
       : waveFormContainerDeckTwo.value;
   const activeAudioElement =
     deck === 1 ? waveFormAudioDeckOne.value : waveFormAudioDeckTwo.value;
-  if (!activeWaveFormContainer || !activeAudioElement)
-    throw createError("No Waveform Container or Audio Element");
+  if (!activeWaveFormContainer || !activeAudioElement) return;
   useLoadTrackOnDeck(
     activeDeck.value,
     file,
@@ -33,10 +33,6 @@ const loadTrack = (
     activeAudioElement,
     title,
   );
-};
-const resetError = (error: NuxtError) => {
-  youtubeLink.value = "";
-  error.value = null;
 };
 </script>
 
@@ -61,14 +57,8 @@ const resetError = (error: NuxtError) => {
           </div>
         </DeckComponent>
       </div>
-      <div class="w-1/2 mr-auto ml-auto">
-        <NuxtErrorBoundary>
-          <TrackLoader />
-          <template #error="{ error }">
-            <p class="text-red-500">{{ error }}</p>
-            <button @click="resetError(error)">Try Again</button>
-          </template>
-        </NuxtErrorBoundary>
+      <div class="w-5/6 mr-auto ml-auto">
+        <TrackLoader />
         <TrackList :tracks="tracks" @load-track="loadTrack" />
       </div>
     </div>

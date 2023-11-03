@@ -1,74 +1,60 @@
 <script lang="ts" setup>
-import { CheckIcon, ArrowUpCircleIcon } from "@heroicons/vue/24/solid";
 import { Track } from "../composables/states";
 interface Props {
   tracks: Track[];
 }
-const deckOne = useDeckOne();
-const deckTwo = useDeckTwo();
 const props = defineProps<Props>();
+const columns = [
+  {
+    key: "id",
+    label: "ID",
+  },
+  {
+    key: "title",
+    label: "Title",
+  },
+  {
+    key: "load-deck-one",
+    label: "Load on left deck",
+  },
+  {
+    key: "load-deck-two",
+    label: "Load on right deck",
+  },
+];
 </script>
 
 <template>
-  <div class="relative overflow-x-auto">
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-      <thead
-        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-      >
-        <tr>
-          <th
-            scope="col"
-            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            Title
-          </th>
-          <th
-            scope="col"
-            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            Load Track on Deck 1
-          </th>
-          <th
-            scope="col"
-            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            Load Track on Deck 2
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(track, index) in props.tracks"
-          :key="track.id"
-          class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-        >
-          <td class="whitespace-nowrap px-6 py-4">{{ track.title }}</td>
-          <td
-            v-if="deckOne.trackId.value === track.id"
-            class="whitespace-nowrap px-6 py-4"
-          >
-            <CheckIcon class="ml-10 -8 w-8 text-green-500 cursor-pointer" />
-          </td>
-          <td v-else class="whitespace-nowrap px-6 py-4">
-            <ArrowUpCircleIcon
-              class="ml-10 -8 w-8 text-blue-400 cursor-pointer"
-              @click="$emit('loadTrack', 1, track.file, track.id, track.title)"
-            />
-          </td>
-          <td
-            v-if="deckTwo.trackId.value === track.id"
-            class="whitespace-nowrap px-6 py-4"
-          >
-            <CheckIcon class="ml-10 -8 w-8 text-green-500 cursor-pointer" />
-          </td>
-          <td v-else class="whitespace-nowrap px-6 py-4">
-            <ArrowUpCircleIcon
-              class="ml-10 kh-8 w-8 text-blue-400 cursor-pointer"
-              @click="$emit('loadTrack', 2, track.file, track.id, track.title)"
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <UTable
+    :rows="tracks"
+    :columns="columns"
+    :empty-state="{ label: 'No tracks downloaded yet' }"
+  >
+    <template #load-deck-one-data="{ row }">
+      <UIcon
+        v-if="useDeckOne().value.trackId === row.id"
+        name="i-heroicons-check"
+        class="ml-10 h-8 w-8 text-green-500 cursor-pointer"
+      />
+      <UIcon
+        v-else
+        name="i-heroicons-arrow-up-circle"
+        class="ml-10 h-8 w-8 text-blue-400 cursor-pointer"
+        @click="$emit('loadTrack', 1, row.file, row.id, row.title)"
+      />
+    </template>
+    <template #load-deck-two-data="{ row }">
+      <UIcon
+        v-if="useDeckTwo().value.trackId === row.id"
+        name="i-heroicons-check"
+        class="ml-10 h-8 w-8 text-green-500 cursor-pointer"
+      />
+      <UIcon
+        v-else
+        name="i-heroicons-arrow-up-circle"
+        class="ml-10 h-8 w-8 text-blue-400 cursor-pointer"
+        @click="$emit('loadTrack', 2, row.file, row.id, row.title)"
+      />
+    </template>
+  </UTable>
 </template>
