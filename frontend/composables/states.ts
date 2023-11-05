@@ -1,26 +1,23 @@
-import WaveSurfer from "wavesurfer.js";
-
 export interface Track {
   id: string;
   title: string;
-  file: Blob;
+  url: string;
 }
 
-export interface Deck {
+export interface DeckValues {
   id: number;
-  wavesurfer: WaveSurfer | undefined;
   trackId: string;
   rate: number;
+  activeLoop: number | null;
   volume: number;
   isWaveformReady: Boolean;
   isPlaying: Boolean;
   title: string;
   bpm: number;
   firstBeatOffset: number;
-  ctx: AudioContext | undefined;
-  highFilter: BiquadFilterNode | undefined;
-  lowFilter: BiquadFilterNode | undefined;
-  midFilter: BiquadFilterNode | undefined;
+  highFilterGain: number;
+  lowFilterGain: number;
+  midFilterGain: number;
   zoom: number;
 }
 
@@ -28,45 +25,23 @@ export const useTracks = () => {
   return useState<Track[]>("tracks", () => []);
 };
 
-export const useDeckOne = () => {
-  return useState<Deck>("deckOne", () => {
+export const useDeckValues = (id: number) => {
+  const deckName = id === 0 ? "leftDeck" : "rightDeck";
+  return useState<DeckValues>(deckName, () => {
     return {
       firstBeatOffset: 0,
       id: 0,
-      wavesurfer: undefined,
       trackId: "",
       rate: 1,
+      activeLoop: null,
       volume: 1,
       isWaveformReady: false,
       isPlaying: false,
       bpm: 0,
       title: "",
-      ctx: undefined,
-      highFilter: undefined,
-      lowFilter: undefined,
-      midFilter: undefined,
-      zoom: 100,
-    };
-  });
-};
-
-export const useDeckTwo = () => {
-  return useState<Deck>("deckTwo", () => {
-    return {
-      firstBeatOffset: 0,
-      id: 0,
-      wavesurfer: undefined,
-      trackId: "",
-      rate: 1,
-      volume: 1,
-      isWaveformReady: false,
-      isPlaying: false,
-      bpm: 0,
-      title: "",
-      ctx: undefined,
-      highFilter: undefined,
-      lowFilter: undefined,
-      midFilter: undefined,
+      highFilterGain: 0,
+      lowFilterGain: 0,
+      midFilterGain: 0,
       zoom: 100,
     };
   });

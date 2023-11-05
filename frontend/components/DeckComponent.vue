@@ -1,117 +1,66 @@
 <script lang="ts" setup>
-import RegionsPlugin from "wavesurfer.js/dist/plugins/regions";
 interface Props {
-  deck: number;
+  deckId: number;
 }
+const emit = defineEmits([
+  "setVolume",
+  "setZoom",
+  "setRate",
+  "toggleLoop",
+  "togglePlay",
+  "skip",
+  "applyLowFilter",
+  "applyMidFilter",
+  "applyHighFilter",
+]);
 const props = defineProps<Props>();
-const deck = props.deck === 1 ? useDeckOne().value : useDeckTwo().value;
-const liveBpm = computed(() => Math.floor(deck.bpm * deck.rate * 100) / 100);
-const lowFilterGain = ref(deck.lowFilter?.gain.value || 0);
-const midFilterGain = ref(deck.midFilter?.gain.value || 0);
-const highFilterGain = ref(deck.highFilter?.gain.value || 0);
-const lowFilterValue = computed(() => {
-  return lowFilterGain.value || 0;
-});
-const midFilterValue = computed(() => {
-  return midFilterGain.value || 0;
-});
-const highFilterValue = computed(() => {
-  return highFilterGain.value || 0;
-});
+const deckValues = useDeckValues(props.deckId).value;
+const liveBpm = computed(
+  () => Math.floor(deckValues.bpm * deckValues.rate * 100) / 100,
+);
 const setVolume = (value: string) => {
-  deck.volume = Number(value);
-  deck.wavesurfer?.setVolume(Number(value));
+  deckValues.volume = Number(value);
+  emit("setVolume", props.deckId);
 };
 const setRate = (value: string) => {
-  deck.rate = Number(value);
-  deck.wavesurfer?.setPlaybackRate(Number(value));
+  deckValues.rate = Number(value);
+  emit("setRate", props.deckId);
 };
-const pause = () => {
-  deck.wavesurfer?.pause();
-};
-const play = () => {
-  deck.wavesurfer?.play();
+const setZoom = (value: number) => {
+  deckValues.zoom += value;
+  emit("setZoom", props.deckId);
 };
 const applyLowFilter = (value: string) => {
-  if (!deck.lowFilter) return;
-  deck.lowFilter.gain.value = Number(value);
-  lowFilterGain.value = Number(value);
-};
-const applyHighFilter = (value: string) => {
-  if (!deck.highFilter) return;
-  deck.highFilter.gain.value = Number(value);
-  highFilterGain.value = Number(value);
+  deckValues.lowFilterGain = Number(value);
+  emit("applyLowFilter", props.deckId);
 };
 const applyMidFilter = (value: string) => {
-  if (!deck.midFilter) return;
-  deck.midFilter.gain.value = Number(value);
-  midFilterGain.value = Number(value);
+  deckValues.midFilterGain = Number(value);
+  emit("applyMidFilter", props.deckId);
 };
-const zoom = (value: string) => {
-  deck.zoom = deck.zoom + Number(value);
-  deck.wavesurfer?.zoom(deck.zoom);
+const applyHighFilter = (value: string) => {
+  deckValues.highFilterGain = Number(value);
+  emit("applyHighFilter", props.deckId);
 };
-const loop = () => {
-  if (!deck.wavesurfer) return;
-  const regions = deck.wavesurfer
-    ?.getActivePlugins()
-    .find((plugin) => plugin?.regions) as RegionsPlugin | undefined;
-  if (!regions) return;
-  regions.clearRegions();
-  const nextBeat = useCalculateNextBeat(deck);
-  // we add a 30ms offset here
-  // because we want to loop before the kick
-  const start = deck.wavesurfer?.getCurrentTime() + nextBeat - 0.03;
-  // the offset here is 45ms because we need a 15ms timeout
-  // before jumping to the beginning of the loop to decrease distortion
-  const end = start + (4 * 60) / deck.bpm - 0.045;
-  regions.addRegion({
-    start,
-    end,
-    drag: false,
-    resize: false,
-  });
-  regions.on("region-out", (region) => {
-    if (!deck.highFilter || !deck.midFilter || !deck.lowFilter) return;
-    // this lowers distortion
-    deck.highFilter.gain.value = -100;
-    deck.midFilter.gain.value = -100;
-    deck.lowFilter.gain.value = -100;
-    setTimeout(() => region.play(), 15);
-  });
-  regions.on("region-in", () => {
-    setTimeout(() => {
-      if (!deck.highFilter) return;
-      deck.highFilter.gain.value = highFilterGain.value;
-    }, 10);
-    setTimeout(() => {
-      if (!deck.midFilter) return;
-      deck.midFilter.gain.value = midFilterGain.value;
-    }, 10);
-    setTimeout(() => {
-      if (!deck.lowFilter) return;
-      deck.lowFilter.gain.value = lowFilterGain.value;
-    }, 10);
-  });
+const toggleLoop = (beats: number) => {
+  deckValues.activeLoop = deckValues.activeLoop === beats ? null : beats;
+  emit("toggleLoop", props.deckId, beats);
 };
 </script>
 
 <template>
-  <div
-    class="bg-gray-100 border p-3 w-1/2 flex flex-col justify-center items-center space-y-2"
-  >
+  <div class="p-3 flex flex-col justify-center items-center space-y-2">
     <p class="font-bold">
-      {{ deck.trackId ? deck.title : "No Track Loaded" }}
+      {{ deckValues.trackId ? deckValues.title : "No Track Loaded" }}
     </p>
-    <slot></slot>
     <div class="flex flex-col items-center justify-center">
       <p class="font-italic mt-4">BPM: {{ liveBpm }}</p>
       <div class="flex flex-row items-center justify-center">
         <UIcon
-          v-if="deck.isWaveformReady"
+          v-if="deckValues.isWaveformReady"
           name="i-heroicons-plus-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
-          @click="zoom('-1')"
+          @click="setZoom(-1)"
         />
         <UIcon
           v-else
@@ -119,10 +68,10 @@ const loop = () => {
           class="text-gray-300 h-11 w-11 m-2"
         />
         <UIcon
-          v-if="deck.isWaveformReady"
+          v-if="deckValues.isWaveformReady"
           name="i-heroicons-backward"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
-          @click="deck.wavesurfer?.skip(-0.5)"
+          @click="$emit('skip', props.deckId, -0.5)"
         />
         <UIcon
           v-else
@@ -130,16 +79,16 @@ const loop = () => {
           class="text-gray-300 h-11 w-11 m-2"
         />
         <UIcon
-          v-if="deck.isWaveformReady && deck.isPlaying"
+          v-if="deckValues.isWaveformReady && deckValues.isPlaying"
           name="i-heroicons-play-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
-          @click="pause()"
+          @click="$emit('togglePlay', props.deckId)"
         />
         <UIcon
-          v-else-if="deck.isWaveformReady && !deck.isPlaying"
+          v-else-if="deckValues.isWaveformReady && !deckValues.isPlaying"
           name="i-heroicons-play-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
-          @click="play"
+          @click="$emit('togglePlay', props.deckId)"
         />
         <UIcon
           v-else
@@ -147,10 +96,10 @@ const loop = () => {
           class="text-gray-300 h-11 w-11 m-2"
         />
         <UIcon
-          v-if="deck.isWaveformReady"
+          v-if="deckValues.isWaveformReady"
           name="i-heroicons-forward"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
-          @click="deck.wavesurfer?.skip(0.5)"
+          @click="$emit('skip', props.deckId, 0.5)"
         />
         <UIcon
           v-else
@@ -158,10 +107,10 @@ const loop = () => {
           class="text-gray-300 h-11 w-11 m-2"
         />
         <UIcon
-          v-if="deck.isWaveformReady"
+          v-if="deckValues.isWaveformReady"
           name="i-heroicons-plus-circle"
           class="text-gray-800 h-11 w-11 m-2 cursor-pointer"
-          @click="zoom('1')"
+          @click="setZoom(1)"
         />
         <UIcon
           v-else
@@ -175,11 +124,11 @@ const loop = () => {
       <PotentiometerComponent
         :min="0"
         :max="1"
-        :initial-value="deck.volume"
-        :disabled="!deck.isWaveformReady"
+        :initial-value="deckValues.volume"
+        :disabled="!deckValues.isWaveformReady"
         @rotate="setVolume"
-        ><div v-if="deck.volume > 0" class="flex">
-          Volume {{ Math.round(100 * deck.volume) }}%
+        ><div v-if="deckValues.volume > 0" class="flex">
+          Volume {{ Math.round(100 * deckValues.volume) }}%
           <UIcon name="i-heroicons-speaker-wave" class="w-5 ml-1"></UIcon>
         </div>
         <div v-else class="flex">
@@ -190,41 +139,84 @@ const loop = () => {
       <PotentiometerComponent
         :min="0.5"
         :max="2"
-        :initial-value="deck.rate"
-        :disabled="!deck.isWaveformReady"
+        :initial-value="deckValues.rate"
+        :disabled="!deckValues.isWaveformReady"
         @rotate="setRate"
         >Playback Rate:
-        {{ Math.round(100 * deck.rate) / 100 }}x</PotentiometerComponent
+        {{ Math.round(100 * deckValues.rate) / 100 }}x</PotentiometerComponent
       >
       <PotentiometerComponent
         :min="-40"
         :max="40"
-        :initial-value="lowFilterValue"
-        :disabled="!deck.isWaveformReady"
+        :initial-value="deckValues.lowFilterGain"
+        :disabled="!deckValues.isWaveformReady"
         @rotate="applyLowFilter"
         >Low Filter:
-        {{ Math.round(100 * lowFilterValue) / 100 }}dB</PotentiometerComponent
+        {{
+          Math.round(100 * deckValues.lowFilterGain) / 100
+        }}dB</PotentiometerComponent
       >
       <PotentiometerComponent
         :min="-40"
         :max="40"
-        :initial-value="midFilterValue"
-        :disabled="!deck.isWaveformReady"
+        :initial-value="deckValues.midFilterGain"
+        :disabled="!deckValues.isWaveformReady"
         @rotate="applyMidFilter"
         >Mid Filter:
-        {{ Math.round(100 * midFilterValue) / 100 }}dB</PotentiometerComponent
+        {{
+          Math.round(100 * deckValues.midFilterGain) / 100
+        }}dB</PotentiometerComponent
       >
       <PotentiometerComponent
         :min="-40"
         :max="40"
-        :initial-value="highFilterValue"
-        :disabled="!deck.isWaveformReady"
+        :initial-value="deckValues.highFilterGain"
+        :disabled="!deckValues.isWaveformReady"
         @rotate="applyHighFilter"
         >High Filter:
-        {{ Math.round(100 * highFilterValue) / 100 }}dB</PotentiometerComponent
+        {{
+          Math.round(100 * deckValues.highFilterGain) / 100
+        }}dB</PotentiometerComponent
       >
     </div>
-    <button @click="loop">Loop next 4 beats</button>
+    <div class="flex flex-row space-x-1">
+      <UButton
+        icon="i-heroicons-arrow-path"
+        size="sm"
+        :color="deckValues.activeLoop === 4 ? 'black' : 'gray'"
+        :disabled="
+          !deckValues.isWaveformReady ||
+          (deckValues.activeLoop && deckValues.activeLoop !== 4)
+        "
+        label="4x"
+        variant="solid"
+        @click="toggleLoop(4)"
+      />
+      <UButton
+        icon="i-heroicons-arrow-path"
+        size="sm"
+        :color="deckValues.activeLoop === 8 ? 'black' : 'gray'"
+        :disabled="
+          !deckValues.isWaveformReady ||
+          (deckValues.activeLoop && deckValues.activeLoop !== 8)
+        "
+        label="8x"
+        variant="solid"
+        @click="toggleLoop(8)"
+      />
+      <UButton
+        icon="i-heroicons-arrow-path"
+        size="sm"
+        :color="deckValues.activeLoop === 16 ? 'black' : 'gray'"
+        :disabled="
+          !deckValues.isWaveformReady ||
+          (deckValues.activeLoop && deckValues.activeLoop !== 16)
+        "
+        label="16x"
+        variant="solid"
+        @click="toggleLoop(16)"
+      />
+    </div>
   </div>
 </template>
 
