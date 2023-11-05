@@ -5,7 +5,7 @@ interface TrackInfoResponse {
   id: string;
 }
 
-const youtubeLink = ref("");
+const youtubeLink = ref("https://www.youtube.com/watch?v=5IrHzrg4qdQ");
 const tracks = useTracks();
 const isDownloading = ref(false);
 const runtimeConfig = useRuntimeConfig();
@@ -53,7 +53,7 @@ const downloadTrack = async () => {
   if (fileResponse.data.value === null) return;
   tracks.value.push({
     title: trackInfoResponse.data.value.title,
-    file: fileResponse.data.value,
+    url: URL.createObjectURL(fileResponse.data.value),
     id: trackInfoResponse.data.value.id,
   });
   isDownloading.value = false;

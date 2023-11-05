@@ -1,9 +1,6 @@
 <script lang="ts" setup>
-import { Track } from "../composables/states";
-interface Props {
-  tracks: Track[];
-}
-const props = defineProps<Props>();
+const tracks = useTracks();
+defineEmits(["loadTrack"]);
 const columns = [
   {
     key: "id",
@@ -28,11 +25,14 @@ const columns = [
   <UTable
     :rows="tracks"
     :columns="columns"
-    :empty-state="{ label: 'No tracks downloaded yet' }"
+    :empty-state="{
+      label: 'No tracks downloaded yet',
+      icon: 'i-heroicons-music-note',
+    }"
   >
     <template #load-deck-one-data="{ row }">
       <UIcon
-        v-if="useDeckOne().value.trackId === row.id"
+        v-if="useDeckValues(0).value.trackId === row.id"
         name="i-heroicons-check"
         class="ml-10 h-8 w-8 text-green-500 cursor-pointer"
       />
@@ -40,12 +40,12 @@ const columns = [
         v-else
         name="i-heroicons-arrow-up-circle"
         class="ml-10 h-8 w-8 text-blue-400 cursor-pointer"
-        @click="$emit('loadTrack', 1, row.file, row.id, row.title)"
+        @click="$emit('loadTrack', 0, row.id)"
       />
     </template>
     <template #load-deck-two-data="{ row }">
       <UIcon
-        v-if="useDeckTwo().value.trackId === row.id"
+        v-if="useDeckValues(1).value.trackId === row.id"
         name="i-heroicons-check"
         class="ml-10 h-8 w-8 text-green-500 cursor-pointer"
       />
@@ -53,7 +53,7 @@ const columns = [
         v-else
         name="i-heroicons-arrow-up-circle"
         class="ml-10 h-8 w-8 text-blue-400 cursor-pointer"
-        @click="$emit('loadTrack', 2, row.file, row.id, row.title)"
+        @click="$emit('loadTrack', 1, row.id)"
       />
     </template>
   </UTable>
