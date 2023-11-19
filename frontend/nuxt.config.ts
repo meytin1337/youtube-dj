@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   modules: ["nuxt-vitest", "@nuxt/ui"],
   runtimeConfig: {
     public: {
-      api: "https://api.youtube-dj.ddns.net/",
+      api: "https://youtube-dj.ddns.net/",
     },
   },
   ssr: false,
