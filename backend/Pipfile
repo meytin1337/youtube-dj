@@ -8,6 +8,7 @@ django = "*"
 flask = "*"
 yt-dlp = "*"
 flask_cors = "*"
+gunicorn = "*"
 
 [dev-packages]
 
