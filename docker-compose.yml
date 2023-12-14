@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ghcr.io/meytin1337/youtube-dj:backend
+    restart: always
+    networks:
+      - public
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik.rule: Host(`api.$DOMAIN`)
+      traefik.http.routers.ydj-backend.tls: "true"
+      traefik.http.routers.ydj-backend.tls.certresolver: default
+      traefik.http.services.ydj-backend.loadbalancer.server.port: '8000'
+
+
+  frontend:
+    image: ghcr.io/meytin1337/youtube-dj:frontend
+    networks:
+      - public
+    restart: always
+    labels:
+      traefik.http.routers.traefik.rule: Host(`$DOMAIN`)
+      traefik.enable: "true"
+      traefik.http.routers.ydj-frontend.tls: "true"
+      traefik.http.routers.ydj-frontend.tls.certresolver: default
+      traefik.http.services.ydj-frontend.loadbalancer.server.port: '3000'
+  
+  traefik:
+    image: ghcr.io/meytin1337/youtube-dj:traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - public
+    labels:
+      traefik.enable: "true"
+      traefik.http.middlewares.traefik-auth.basicauth.users: admin:$$apr1$$ljCOawSW$$gHFW7FE3C87h5EkvQjcoI/
+      traefik.http.routers.traefik.middlewares: traefik-auth
+      traefik.http.routers.traefik.rule: Host(`traefik.$DOMAIN`)
+      traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.tls: "true"
+      traefik.http.routers.traefik.tls.certresolver: default
+      traefik.http.services.traefik.loadbalancer.server.port: '8080'
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - config:/etc/traefik/config
+
+networks:
+  public:
+    external: true
+
+volumes:
+  config:
