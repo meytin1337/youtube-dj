@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: ghcr.io/meytin1337/youtube-dj:backend
+    image: ghcr.io/meytin1337/youtube-dj/backend:latest
     restart: always
     networks:
       - public
@@ -15,7 +15,7 @@ services:
 
 
   frontend:
-    image: ghcr.io/meytin1337/youtube-dj:frontend
+    image: ghcr.io/meytin1337/youtube-dj/frontend:latest
     networks:
       - public
     restart: always
@@ -27,7 +27,7 @@ services:
       traefik.http.services.ydj-frontend.loadbalancer.server.port: '3000'
   
   traefik:
-    image: ghcr.io/meytin1337/youtube-dj:traefik
+    image: ghcr.io/meytin1337/youtube-dj/traefik:latest
     ports:
       - "80:80"
       - "443:443"
