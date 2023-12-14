@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   modules: ["nuxt-vitest", "@nuxt/ui"],
   runtimeConfig: {
     public: {
-      api: "https://api.ydj.heemeyer.net",
+      api: "https://api.ydj.heemeyer.net/",
     },
   },
   ssr: false,
