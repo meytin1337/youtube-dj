@@ -45,6 +45,9 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - config:/etc/traefik/config
+      - acme:/etc/traefik/acme
+
+
 
 networks:
   public:
@@ -52,3 +55,4 @@ networks:
 
 volumes:
   config:
+  acme:
