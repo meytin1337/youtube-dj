@@ -1,0 +1,31 @@
+[api]
+  dashboard = true
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.http.redirections]
+      [entryPoints.http.http.redirections.entryPoint]
+        to = "https"
+  [entryPoints.https]
+  address = ":443"
+
+[certificatesResolvers.default.acme]
+  email = "matsheemeyer@gmail.com"
+  storage = "acme/acme.json"
+  [certificatesResolvers.default.acme.httpChallenge]
+  entryPoint = "http"
+
+[ping]
+  entryPoint = "http"
+
+[providers]
+  [providers.file]
+    directory = "/etc/traefik/config"
+    watch = true
+  [providers.docker]
+    watch = true
+    exposedByDefault = false
+    swarmMode = true
+    network = "public"
+
