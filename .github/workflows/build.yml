@@ -1,0 +1,33 @@
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: frontend/
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/youtube-dj/frontend
+
+    - name: Build and push backend image 
+      uses: docker/build-push-action@v5
+      with:
+        context: frontend/
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/youtube-dj/backend
